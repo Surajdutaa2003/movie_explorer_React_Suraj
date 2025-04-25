@@ -68,15 +68,15 @@ const Dashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Main Content */}
+      
       <main className="flex-1">
-        {/* You can place your HeroCard or any other component here later */}
+        
         <div className="p-6 text-center text-gray-400 text-sm">
           Welcome to Movie+ Dashboard
         </div>
       </main>
 
-      {/* Footer */}
+      
       <footer className="bg-gray-900 text-gray-400 p-4 text-center text-sm border-t border-gray-700">
         <p>&copy; {new Date().getFullYear()} Movie+. All rights reserved.</p>
         <div className="mt-2 flex justify-center space-x-4 text-xs">

@@ -1,237 +1,184 @@
-import React, { Component } from "react";
-import {
-  Box,
-  TextField,
-  Button,
-  Divider,
-  Typography,
-  Paper,
-  Stack,
-} from "@mui/material";
-import { FcGoogle } from "react-icons/fc";
-import { FaApple } from "react-icons/fa";
-import { MdEmail, MdLock, MdPerson, MdPhone } from "react-icons/md";
-import LoginLogo from "./assets/loginLogo.png";
+import React, { Component } from 'react';
+import { TextField, Button, Typography } from '@mui/material';
+import { signup } from './api';  // Ensure the signup API is correctly imported
 
-interface State {
+interface SignupState {
   name: string;
   email: string;
   password: string;
   confirmPassword: string;
   mobile: string;
+  error: string | null;
 }
 
-class SignupPage extends Component<{}, State> {
+class SignupPage extends Component<{}, SignupState> {
   constructor(props: {}) {
     super(props);
     this.state = {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      mobile: "",
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      mobile: '',
+      error: null,
     };
   }
 
-  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    this.setState({ [name]: value } as Pick<State, keyof State>);
+  handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    this.setState({ [name]: value } as any);
   };
 
-  handleSignUp = () => {
+  handleSignUp = async () => {
     const { name, email, password, confirmPassword, mobile } = this.state;
 
+    // Validate all fields
     if (!name || !email || !password || !confirmPassword || !mobile) {
-      alert("Please fill all fields");
+      this.setState({ error: 'Please fill all fields' });
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      this.setState({ error: 'Please enter a valid email address' });
+      return;
+    }
+
+    // Validate password
+    if (password.length < 6) {
+      this.setState({ error: 'Password must be at least 6 characters long' });
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      this.setState({ error: 'Passwords do not match' });
       return;
     }
 
-    // Save the user data in localStorage
-    localStorage.setItem(
-      "user",
-      JSON.stringify({ name, email, password, mobile })
-    );
+    // Validate mobile number
+    if (!/^\d{10}$/.test(mobile)) {
+      this.setState({ error: 'Mobile number must be 10 digits' });
+      return;
+    }
 
-    alert("Account created successfully!");
-    window.location.href = "/login";
+    try {
+      const signupData = {
+        full_name: name,
+        email,
+        mobile_number: mobile,
+        password,
+        role: 0, // Assuming '0' is a regular user role
+      };
+
+      const response = await signup(signupData);
+
+      if (response.user?.id) {
+        alert('Account created successfully!');
+        window.location.href = '/login';
+      } else {
+        this.setState({ error: 'Signup failed. Please try again.' });
+      }
+    } catch (error: any) {
+      let errorMessage = 'An error occurred during signup.';
+
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        if (error.response.data.errors) {
+          // Extracting specific error messages from the response object
+          const errorMessages = error.response.data.errors;
+          errorMessage = Array.isArray(errorMessages)
+            ? errorMessages.join(', ')
+            : errorMessages; // Join the error messages if it's an array
+        } else {
+          errorMessage = error.response.data?.message || error.response.data || error.message;
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        errorMessage = 'No response received from server. Please try again.';
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        errorMessage = error.message;
+      }
+
+      this.setState({ error: errorMessage });
+      console.error('Signup error:', error);
+    }
   };
 
   render() {
-    const { name, email, password, confirmPassword, mobile } = this.state;
+    const { name, email, password, confirmPassword, mobile, error } = this.state;
 
     return (
-      <Box
-        minHeight="100vh"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        px={2}
-        bgcolor="#EDEEF0"
-      >
-        {/* Logo */}
-        <Box display="flex" flexDirection="column" alignItems="center" mb={5}>
-          <Box
-            width={300}
-            height={200}
-            borderRadius="50%"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Typography>
-              <img
-                src={LoginLogo}
-                alt="logo"
-                className="w-[290px] h-[290px] object-contain relative bottom-[10px]"
-              />
-            </Typography>
-          </Box>
-        </Box>
+      <div>
+        <Typography variant="h4" align="center">
+          Sign Up
+        </Typography>
 
-        {/* Form */}
-        <Paper
-          elevation={0}
-          sx={{
-            width: "100%",
-            maxWidth: 400,
-            p: 3,
-            bgcolor: "#EDEEF0",
-            border: "1px solid rgba(0, 0, 0, 0.1)",
-            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-            borderRadius: 2,
-          }}
+        {error && (
+          <Typography variant="body2" color="error" align="center">
+            {error}
+          </Typography>
+        )}
+
+        <TextField
+          label="Full Name"
+          name="name"
+          value={name}
+          onChange={this.handleInputChange}
+          fullWidth
+          margin="normal"
+        />
+
+        <TextField
+          label="Email Address"
+          name="email"
+          value={email}
+          onChange={this.handleInputChange}
+          fullWidth
+          margin="normal"
+        />
+
+        <TextField
+          label="Password"
+          name="password"
+          type="password"
+          value={password}
+          onChange={this.handleInputChange}
+          fullWidth
+          margin="normal"
+        />
+
+        <TextField
+          label="Confirm Password"
+          name="confirmPassword"
+          type="password"
+          value={confirmPassword}
+          onChange={this.handleInputChange}
+          fullWidth
+          margin="normal"
+        />
+
+        <TextField
+          label="Mobile Number"
+          name="mobile"
+          value={mobile}
+          onChange={this.handleInputChange}
+          fullWidth
+          margin="normal"
+        />
+
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          onClick={this.handleSignUp}
+          style={{ marginTop: '20px' }}
         >
-          <Stack spacing={2}>
-            <Box display="flex" alignItems="flex-end">
-              <MdPerson size={20} style={{ marginRight: 8, color: "#9e9e9e" }} />
-              <TextField
-                fullWidth
-                variant="standard"
-                placeholder="Name"
-                type="text"
-                name="name"
-                value={name}
-                onChange={this.handleChange}
-              />
-            </Box>
-
-            <Box display="flex" alignItems="flex-end">
-              <MdEmail size={20} style={{ marginRight: 8, color: "#9e9e9e" }} />
-              <TextField
-                fullWidth
-                variant="standard"
-                placeholder="Email"
-                type="email"
-                name="email"
-                value={email}
-                onChange={this.handleChange}
-              />
-            </Box>
-
-            <Box display="flex" alignItems="flex-end">
-              <MdPhone size={20} style={{ marginRight: 8, color: "#9e9e9e" }} />
-              <TextField
-  fullWidth
-  variant="standard"
-  placeholder="Mobile Number"
-  type="text"
-  name="mobile"
-  value={mobile}
-  onChange={(e) => {
-    const value = e.target.value;
-    // Allow only numbers
-    if (/^\d*$/.test(value)) {
-      this.setState({ mobile: value });
-    }
-  }}
-  inputProps={{ inputMode: "numeric", pattern: "[0-9]*", maxLength: 10 }}
-/>
-
-            </Box>
-
-            <Box display="flex" alignItems="flex-end">
-              <MdLock size={20} style={{ marginRight: 8, color: "#9e9e9e" }} />
-              <TextField
-                fullWidth
-                variant="standard"
-                placeholder="Password"
-                type="password"
-                name="password"
-                value={password}
-                onChange={this.handleChange}
-              />
-            </Box>
-
-            <Box display="flex" alignItems="flex-end">
-              <MdLock size={20} style={{ marginRight: 8, color: "#9e9e9e" }} />
-              <TextField
-                fullWidth
-                variant="standard"
-                placeholder="Confirm Password"
-                type="password"
-                name="confirmPassword"
-                value={confirmPassword}
-                onChange={this.handleChange}
-              />
-            </Box>
-
-            <Button
-              fullWidth
-              variant="contained"
-              sx={{
-                mt: 1,
-                bgcolor: "#1976d2",
-                "&:hover": { bgcolor: "#115293" },
-                transition: "background-color 0.3s ease-in-out",
-              }}
-              onClick={this.handleSignUp}
-            >
-              Sign Up
-            </Button>
-          </Stack>
-
-          <Divider sx={{ my: 3 }}>
-            <Typography variant="body2" color="textSecondary">
-              OR
-            </Typography>
-          </Divider>
-
-          <Stack spacing={1.5}>
-            <Button
-              fullWidth
-              variant="outlined"
-              startIcon={<FcGoogle />}
-              sx={{ textTransform: "none" }}
-            >
-              Continue with Google
-            </Button>
-            <Button
-              fullWidth
-              variant="outlined"
-              startIcon={<FaApple />}
-              sx={{ textTransform: "none" }}
-            >
-              Continue with Apple
-            </Button>
-          </Stack>
-
-          {/* Link to Sign In */}
-          <Box mt={2} textAlign="center">
-            <Typography variant="body2" color="textSecondary">
-              Already have an account?{" "}
-              <a href="/login" style={{ color: "#1976d2", textDecoration: "none" }}>
-                Sign In
-              </a>
-            </Typography>
-          </Box>
-        </Paper>
-      </Box>
+          Sign Up
+        </Button>
+      </div>
     );
   }
 }

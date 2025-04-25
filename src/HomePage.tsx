@@ -21,17 +21,28 @@ const HomePage: React.FC = () => {
     const moveCursor = (event: MouseEvent) => {
       const { clientX, clientY } = event;
       setPos({ x: clientX, y: clientY });
+
+      if (cursorRef.current) {
+        cursorRef.current.style.left = `${clientX}px`;
+        cursorRef.current.style.top = `${clientY}px`;
+      }
     };
+
     window.addEventListener("mousemove", moveCursor);
     return () => window.removeEventListener("mousemove", moveCursor);
   }, []);
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-black text-white">
-      {/* Dark overlay */}
+      {/* Custom Cursor */}
+      <div
+        ref={cursorRef}
+        className="pointer-events-none fixed w-5 h-5 rounded-full bg-white z-50 mix-blend-difference transition-all duration-100"
+        style={{ transform: "translate(-50%, -50%)" }}
+      ></div>
+
       <div className="absolute inset-0 bg-black bg-opacity-70 z-0 backdrop-blur-sm"></div>
 
-      {/* Posters */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         {posters.map((poster, index) => (
           <img
@@ -48,7 +59,6 @@ const HomePage: React.FC = () => {
         ))}
       </div>
 
-      {/* Login Button */}
       <div className="absolute top-6 right-6 z-10">
         <button
           onClick={() => navigate("/login")}
@@ -58,7 +68,6 @@ const HomePage: React.FC = () => {
         </button>
       </div>
 
-      {/* Center Text */}
       <div className="absolute top-1/2 left-1/2 z-10 text-center transform -translate-x-1/2 -translate-y-1/2">
         <h1 className="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-400 drop-shadow-lg">
           Movie Explorer+

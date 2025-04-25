@@ -5,6 +5,12 @@ import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import LoginLogo from "./assets/loginLogo.png";
+import { login } from "./Api"; // <- Import the login function
+
+interface LoginResponse {
+  user: any;
+  token: string;
+}
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -17,16 +23,20 @@ const LoginPage = () => {
     else if (name === "password") setPassword(value);
   };
 
-  const handleLogin = () => {
-    const userData = JSON.parse(localStorage.getItem("user") || "{}");
+  const handleLogin = async () => {
+    try {
+      const response = await login({ email, password }) as LoginResponse;
 
-    if (!userData || userData.email !== email || userData.password !== password) {
-      alert("Invalid email or password.");
-      return;
+      // Save token or user data if needed
+      localStorage.setItem("user", JSON.stringify(response.user));
+      localStorage.setItem("token", response.token); // If token is returned
+
+      alert("Login successful!");
+      navigate("/home");
+    } catch (error: any) {
+      alert("Login failed. Please check your email and password.");
+      console.error("Login error:", error);
     }
-
-    alert("Login successful!");
-    navigate("/home"); // Redirect to /home
   };
 
   return (
@@ -118,34 +128,19 @@ const LoginPage = () => {
           </Typography>
         </Divider>
 
-        {/* Social Buttons */}
         <Stack spacing={1.5}>
-          <Button
-            fullWidth
-            variant="outlined"
-            startIcon={<FcGoogle />}
-            sx={{ textTransform: "none" }}
-          >
+          <Button fullWidth variant="outlined" startIcon={<FcGoogle />} sx={{ textTransform: "none" }}>
             Continue with Google
           </Button>
-          <Button
-            fullWidth
-            variant="outlined"
-            startIcon={<FaApple />}
-            sx={{ textTransform: "none" }}
-          >
+          <Button fullWidth variant="outlined" startIcon={<FaApple />} sx={{ textTransform: "none" }}>
             Continue with Apple
           </Button>
         </Stack>
 
-        {/* Sign Up Link */}
         <Box mt={2} textAlign="center">
           <Typography variant="body2" color="textSecondary">
             Don't have an account?{" "}
-            <Button
-              sx={{ textTransform: "none", padding: 0 }}
-              onClick={() => navigate("/signup")} // Adjust the route to your signup page
-            >
+            <Button sx={{ textTransform: "none", padding: 0 }} onClick={() => navigate("/signup")}>
               Sign Up
             </Button>
           </Typography>
