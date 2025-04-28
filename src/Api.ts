@@ -103,4 +103,4 @@ export const getMovies = async (page: number = 1): Promise<MoviesResponse> => {
     console.error('Get movies error: ', error);
     throw error;
   }
-};
+};  
