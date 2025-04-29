@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MovieList from './MovieList';
 import { getMovies } from './Api';
+import { Link } from 'react-router-dom';
 
 interface Movie {
   id: number;
@@ -85,12 +86,22 @@ const Dashboard: React.FC = () => {
             </svg>
           </button>
         </div>
-        <div className="hidden md:flex space-x-6">
+        <div className="hidden md:flex items-center space-x-6">
           {navItems.map((item) => (
-            <a key={item} href="#" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+            <Link
+              key={item}
+              to={item === 'Home' ? '/home' : `/${item.toLowerCase()}`}
+              className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+            >
               {item}
-            </a>
+            </Link>
           ))}
+          <Link
+            to="/pricing"
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            Subscribe
+          </Link>
         </div>
       </nav>
 
@@ -99,10 +110,22 @@ const Dashboard: React.FC = () => {
         <div className="md:hidden bg-white p-4 border-b border-gray-300">
           <div className="flex flex-col space-y-2">
             {navItems.map((item) => (
-              <a key={item} href="#" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+              <Link
+                key={item}
+                to={item === 'Home' ? '/home' : `/${item.toLowerCase()}`}
+                className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
                 {item}
-              </a>
+              </Link>
             ))}
+            <Link
+              to="/pricing"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 text-center"
+              onClick={() => setMenuOpen(false)}
+            >
+              Subscribe
+            </Link>
           </div>
         </div>
       )}

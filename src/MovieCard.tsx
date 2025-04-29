@@ -1,15 +1,24 @@
 import React from 'react';
 
 interface MovieCardProps {
+  id: number;
   title: string;
   poster: string;
   genre: string;
   rating: number;
+  onMovieClick: (movieId: number) => void;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ title, poster, genre, rating }) => {
+const MovieCard: React.FC<MovieCardProps> = ({ id, title, poster, genre, rating, onMovieClick }) => {
+  const handleClick = () => {
+    onMovieClick(id);
+  };
+
   return (
-    <div className="relative group overflow-hidden rounded-lg shadow-lg transition-transform transform hover:scale-105">
+    <div 
+      className="relative group overflow-hidden rounded-lg shadow-lg transition-transform transform hover:scale-105 cursor-pointer"
+      onClick={handleClick}
+    >
       <img
         src={poster}
         alt={title}
