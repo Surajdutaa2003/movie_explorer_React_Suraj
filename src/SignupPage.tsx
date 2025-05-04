@@ -9,9 +9,10 @@ import {
   Divider,
 } from '@mui/material';
 import { MdEmail, MdLock, MdPerson, MdPhone } from 'react-icons/md';
-import { signup } from './Api';
+import { signupUser } from './Api'; // Using the signupUser function from Aalekh API
 import { FaApple } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
+import throttle from 'lodash/throttle';
 import LoginLogo from './assets/loginLogo.png';
 
 interface SignupState {
@@ -24,6 +25,8 @@ interface SignupState {
 }
 
 class SignupPage extends Component<{}, SignupState> {
+  throttledSignup: () => void;
+
   constructor(props: {}) {
     super(props);
     this.state = {
@@ -34,6 +37,13 @@ class SignupPage extends Component<{}, SignupState> {
       mobile: '',
       error: null,
     };
+
+    // Throttle the sign-up function to once every 3 seconds, but disable throttling in test environment
+    if (process.env.NODE_ENV === 'test') {
+      this.throttledSignup = this._handleSignUp.bind(this);
+    } else {
+      this.throttledSignup = throttle(this._handleSignUp.bind(this), 3000);
+    }
   }
 
   handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,7 +51,7 @@ class SignupPage extends Component<{}, SignupState> {
     this.setState({ [name]: value } as any);
   };
 
-  handleSignUp = async () => {
+  _handleSignUp = async () => {
     const { name, email, password, confirmPassword, mobile } = this.state;
 
     if (!name || !email || !password || !confirmPassword || !mobile) {
@@ -55,8 +65,8 @@ class SignupPage extends Component<{}, SignupState> {
       return;
     }
 
-    if (password.length < 6) {
-      this.setState({ error: 'Password must be at least 6 characters long' });
+    if (password.length < 8) {
+      this.setState({ error: 'Password must be at least 8 characters long' });
       return;
     }
 
@@ -72,50 +82,32 @@ class SignupPage extends Component<{}, SignupState> {
 
     try {
       const signupData = {
-        full_name: name,
+        name,
         email,
         mobile_number: mobile,
         password,
-        role: 0,
       };
 
-      const response = await signup(signupData);
+      console.log('Sending signup payload:', signupData); // Debug log
+
+      const response = await signupUser(signupData); // Using Aalekh API signup function
 
       if (response.user?.id) {
+        localStorage.setItem('token', response.token);
         alert('Account created successfully!');
         window.location.href = '/login';
       } else {
         this.setState({ error: 'Signup failed. Please try again.' });
       }
     } catch (error: any) {
-      let errorMessage = 'An error occurred during signup.';
-
-      if (error.response) {
-        if (error.response.data.errors) {
-          const errorMessages = error.response.data.errors;
-          errorMessage = Array.isArray(errorMessages)
-            ? errorMessages.join(', ')
-            : errorMessages;
-        } else {
-          errorMessage =
-            error.response.data?.message ||
-            error.response.data ||
-            error.message;
-        }
-      } else if (error.request) {
-        errorMessage = 'No response received from server. Please try again.';
-      } else {
-        errorMessage = error.message;
-      }
-
+      const errorMessage = error.message || 'An error occurred during signup.';
+      console.error('Signup error details:', error); // Log full error for debugging
       this.setState({ error: errorMessage });
-      console.error('Signup error:', error);
     }
   };
 
   render() {
-    const { name, email, password, confirmPassword, mobile, error } =
-      this.state;
+    const { name, email, password, confirmPassword, mobile, error } = this.state;
 
     return (
       <Box
@@ -238,12 +230,13 @@ class SignupPage extends Component<{}, SignupState> {
                 '&:hover': { bgcolor: '#115293' },
                 transition: 'background-color 0.3s ease-in-out',
               }}
-              onClick={this.handleSignUp}
+              onClick={this.throttledSignup}
             >
               Sign Up
             </Button>
           </Stack>
 
+65
           <Divider sx={{ my: 3 }}>
             <Typography variant="body2" color="textSecondary">
               OR

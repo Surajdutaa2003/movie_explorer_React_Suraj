@@ -1,1 +1,21 @@
 @import "tailwindcss";
+@keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  .swiper-pagination-bullet {
+    background: #1e40af; /* Blue color to match the theme */
+    opacity: 0.5;
+  }
+  .swiper-pagination-bullet-active {
+    background: #1e40af;
+    opacity: 1;
+  }
