@@ -70,7 +70,7 @@ const HomePage: React.FC = () => {
 
       <div className="absolute top-1/2 left-1/2 z-10 text-center transform -translate-x-1/2 -translate-y-1/2">
         <h1 className="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-400 drop-shadow-lg">
-          Movie Explorer+
+          Movie Explore+
         </h1>
         <p className="mt-4 text-xl text-gray-300 tracking-wide font-medium">
           Dive into a world of cinema like never before.

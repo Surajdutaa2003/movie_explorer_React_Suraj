@@ -6,26 +6,7 @@ import { Autoplay, Navigation } from 'swiper/modules';
 import SwiperCore from 'swiper';
 import 'swiper/css';
 import 'swiper/css/navigation';
-
-interface Movie {
-  id: number;
-  title: string;
-  genre: string;
-  release_year: number;
-  rating: number;
-  actors: string;
-  country: string;
-  director: string;
-  duration: number;
-  description: string;
-  language: string;
-  budget: string;
-  box_office: string;
-  poster_urls: string[];
-  created_at: string;
-  updated_at: string;
-  user_id: number;
-}
+import { Movie } from './Api';
 
 interface MovieListProps {
   movies: Movie[];
@@ -36,8 +17,6 @@ const MovieList: React.FC<MovieListProps> = ({ movies }) => {
 
   const allMoviesSwiperRef = useRef<SwiperCore | null>(null);
   const trendingSwiperRef = useRef<SwiperCore | null>(null);
-  
-  
 
   const trendingMovies = movies.filter((movie) => movie.rating > 7);
 
@@ -86,7 +65,7 @@ const MovieList: React.FC<MovieListProps> = ({ movies }) => {
                     id={movie.id}
                     title={movie.title}
                     poster={
-                      movie.poster_urls[0] ||
+                      movie.poster_url ||
                       'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQoSOgjBmQN9GUg3GQnTNKJHlyuZjP8ESr8AMgf7fYTu9rOr9G5Ewd9IMMi6nuCu8LNp_I8xIMBrlRbt_AJ8fLyVysNlk93Q0so4nyU5c0Hdw9Pd4Q1bemJ'
                     }
                     genre={movie.genre}
@@ -143,7 +122,7 @@ const MovieList: React.FC<MovieListProps> = ({ movies }) => {
                     id={movie.id}
                     title={movie.title}
                     poster={
-                      movie.poster_urls[0] ||
+                      movie.poster_url ||
                       'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQoSOgjBmQN9GUg3GQnTNKJHlyuZjP8ESr8AMgf7fYTu9rOr9G5Ewd9IMMi6nuCu8LNp_I8xIMBrlRbt_AJ8fLyVysNlk93Q0so4nyU5c0Hdw9Pd4Q1bemJ'
                     }
                     genre={movie.genre}

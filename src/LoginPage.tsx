@@ -1,12 +1,21 @@
 import React, { Component } from "react";
-import { Box, TextField, Button, Divider, Typography, Paper, Stack } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Button,
+  Divider,
+  Typography,
+  Paper,
+  Stack,
+} from "@mui/material";
 import { MdEmail, MdLock } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa";
 import LoginLogo from "./assets/loginLogo.png";
-import { login } from "./Api";
+import { loginUser } from "./Api"; // Updated import for the new login function
 import { withNavigate } from "./withNavigate";
 import { NavigateFunction } from "react-router-dom";
+import { throttle } from "lodash";
 
 interface LoginResponse {
   user: {
@@ -27,24 +36,35 @@ interface LoginPageState {
 }
 
 class LoginPage extends Component<LoginPageProps, LoginPageState> {
+  throttledLogin: () => void;
+
   constructor(props: LoginPageProps) {
     super(props);
     this.state = {
       email: "",
       password: "",
     };
+
+    // Throttle the login function to prevent rapid submissions
+    this.throttledLogin = throttle(this.handleLogin.bind(this), 2000, {
+      trailing: false,
+    });
   }
 
   handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    this.setState({ [name]: value } as Pick<LoginPageState, keyof LoginPageState>);
+    this.setState({ [name]: value } as Pick<
+      LoginPageState,
+      keyof LoginPageState
+    >);
   };
 
   handleLogin = async () => {
     const { email, password } = this.state;
     const { navigate } = this.props;
+
     try {
-      const response = await login({ email, password }) as LoginResponse;
+      const response = (await loginUser({ email, password })) as LoginResponse;
 
       // Save token or user data if needed
       localStorage.setItem("user", JSON.stringify(response.user));
@@ -60,7 +80,7 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
 
   render() {
     const { email, password } = this.state;
-    const { navigate } = this.props; // Access navigate from props
+    const { navigate } = this.props;
 
     return (
       <Box
@@ -139,7 +159,7 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
                 "&:hover": { bgcolor: "#115293" },
                 transition: "background-color 0.3s ease-in-out",
               }}
-              onClick={this.handleLogin}
+              onClick={this.throttledLogin} // <- throttled here
             >
               Sign In
             </Button>
@@ -152,10 +172,20 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
           </Divider>
 
           <Stack spacing={1.5}>
-            <Button fullWidth variant="outlined" startIcon={<FcGoogle />} sx={{ textTransform: "none" }}>
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<FcGoogle />}
+              sx={{ textTransform: "none" }}
+            >
               Continue with Google
             </Button>
-            <Button fullWidth variant="outlined" startIcon={<FaApple />} sx={{ textTransform: "none" }}>
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<FaApple />}
+              sx={{ textTransform: "none" }}
+            >
               Continue with Apple
             </Button>
           </Stack>
@@ -163,7 +193,10 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
           <Box mt={2} textAlign="center">
             <Typography variant="body2" color="textSecondary">
               Don't have an account?{" "}
-              <Button sx={{ textTransform: "none", padding: 0 }} onClick={() => navigate("/signup")}>
+              <Button
+                sx={{ textTransform: "none", padding: 0 }}
+                onClick={() => navigate("/signup")}
+              >
                 Sign Up
               </Button>
             </Typography>
