@@ -25,8 +25,10 @@ describe('SignupPage Component', () => {
   test('calls signup API and redirects on success', async () => {
     const mockResponse = { user: { id: 1 } };
     (Api.signupUser as jest.Mock).mockResolvedValue(mockResponse);
-    delete window.location;
-    window.location = { href: '' } as any;
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: { href: '' },
+    });
 
     render(<SignupPage />);
     fireEvent.change(screen.getByPlaceholderText(/Full Name/i), { target: { value: 'Test User' } });

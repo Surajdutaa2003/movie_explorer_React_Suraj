@@ -19,11 +19,13 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onDeleteMovie }) => {
     clickCountRef.current += 1;
 
     if (clickCountRef.current === 1) {
-      clickTimeoutRef.current = setTimeout(() => {
-        setShowButtons(true);
-        setTimeout(() => setShowButtons(false), 5000);
+      // Show buttons immediately on first click
+      setShowButtons(true);
+      // Set timeout to hide buttons
+      setTimeout(() => {
+        setShowButtons(false);
         clickCountRef.current = 0;
-      }, 1000);
+      }, 5000);
     } else if (clickCountRef.current === 2) {
       if (clickTimeoutRef.current) {
         clearTimeout(clickTimeoutRef.current);
@@ -74,11 +76,11 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onDeleteMovie }) => {
       {userRole === 'supervisor' && (
         <div className="absolute top-2 right-2 flex space-x-2">
           <button
-            onClick={handleEditClick}
             className={`${
               showButtons ? 'opacity-100' : 'opacity-0'
             } md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 focus:outline-none z-10`}
             title="Edit Movie"
+            onClick={handleEditClick}
           >
             <svg
               className="w-5 h-5"
@@ -129,3 +131,4 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onDeleteMovie }) => {
 };
 
 export default MovieCard;
+// ss

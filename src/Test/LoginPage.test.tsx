@@ -1,45 +1,49 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { vi } from 'vitest';
+import LoginPage from '../LoginPage'; // update path as needed
+import { loginUser } from '../Api'; // update path as needed
 import { MemoryRouter } from 'react-router-dom';
-import LoginPage from '../LoginPage'; // Adjust the path as needed
-import * as Api from '../Api'; // Import the API module
+import '@testing-library/jest-dom';
 
-// Mock the loginUser function in the Api module and provide types for the mock
-vi.mock('./Api', () => ({
-  loginUser: vi.fn() as unknown as jest.MockedFunction<typeof Api.loginUser>,
+// Mocks
+jest.mock('../Api', () => ({
+  loginUser: jest.fn(),
+}));
+
+const mockedNavigate = jest.fn();
+
+jest.mock('../withNavigate', () => ({
+  withNavigate: (Component: any) => (props: any) =>
+    <Component {...props} navigate={mockedNavigate} />,
 }));
 
 describe('LoginPage Component', () => {
   beforeEach(() => {
-    vi.clearAllMocks(); // Reset all mocks before each test
+    jest.clearAllMocks();
+    localStorage.clear();
   });
 
-  test('renders LoginPage correctly', () => {
+  it('renders email, password fields and sign in button', () => {
     render(
       <MemoryRouter>
         <LoginPage />
       </MemoryRouter>
     );
 
-    // Check for the presence of email and password input fields
     expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Sign In/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
   });
 
-  test('submits the login form with correct credentials', async () => {
-    const mockLoginResponse = {
-      user: {
-        id: 1,
-        email: 'test@example.com',
-      },
+  it('logs in successfully and navigates to home', async () => {
+    const mockResponse = {
+      user: { id: 1, email: 'test@example.com' },
       token: 'mock-token',
       role: 'user',
     };
 
-    // Mocking loginUser to resolve with mockLoginResponse
-    (Api.loginUser as jest.MockedFunction<typeof Api.loginUser>).mockResolvedValue(mockLoginResponse);
+    (loginUser as jest.Mock).mockResolvedValue(mockResponse);
+    window.alert = jest.fn();
 
     render(
       <MemoryRouter>
@@ -50,33 +54,31 @@ describe('LoginPage Component', () => {
     fireEvent.change(screen.getByPlaceholderText('Email'), {
       target: { value: 'test@example.com' },
     });
+
     fireEvent.change(screen.getByPlaceholderText('Password'), {
       target: { value: 'password123' },
     });
 
-    // Submit the form
-    fireEvent.click(screen.getByRole('button', { name: /Sign In/i }));
+    fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
-    // Wait for the login function to be called and check the behavior
-    await waitFor(() => expect(Api.loginUser).toHaveBeenCalledWith({
-      email: 'test@example.com',
-      password: 'password123',
-    }));
+    await waitFor(() => {
+      expect(loginUser).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password123',
+      });
+    });
 
-    // Ensure the navigation happens after login
     expect(localStorage.getItem('role')).toBe('user');
-    expect(localStorage.getItem('user')).toBe(JSON.stringify(mockLoginResponse.user));
-    expect(localStorage.getItem('token')).toBe(mockLoginResponse.token);
-
-    // You can also mock `navigate` and verify it was called with the correct route
-    expect(screen.getByText(/Login successful!/i)).toBeInTheDocument();
+    expect(localStorage.getItem('token')).toBe('mock-token');
+    expect(localStorage.getItem('user')).toBe(JSON.stringify(mockResponse.user));
+    expect(mockedNavigate).toHaveBeenCalledWith('/home');
+    expect(window.alert).toHaveBeenCalledWith('Login successful!');
   });
 
-  test('shows an error when login fails', async () => {
-    const mockError = new Error('Login failed');
-
-    // Mocking loginUser to reject with mockError
-    (Api.loginUser as jest.MockedFunction<typeof Api.loginUser>).mockRejectedValue(mockError);
+  it('shows error alert on failed login', async () => {
+    (loginUser as jest.Mock).mockRejectedValue(new Error('Invalid credentials'));
+    window.alert = jest.fn();
+    console.error = jest.fn(); // suppress error logs
 
     render(
       <MemoryRouter>
@@ -85,31 +87,31 @@ describe('LoginPage Component', () => {
     );
 
     fireEvent.change(screen.getByPlaceholderText('Email'), {
-      target: { value: 'invalid@example.com' },
+      target: { value: 'wrong@example.com' },
     });
+
     fireEvent.change(screen.getByPlaceholderText('Password'), {
-      target: { value: 'wrongpassword' },
+      target: { value: 'wrongpass' },
     });
 
-    // Submit the form
-    fireEvent.click(screen.getByRole('button', { name: /Sign In/i }));
+    fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
-    // Wait for the error alert to appear
-    await waitFor(() => expect(screen.getByText(/Login failed. Please check your email and password./i)).toBeInTheDocument());
+    await waitFor(() => {
+      expect(loginUser).toHaveBeenCalled();
+    });
+
+    expect(window.alert).toHaveBeenCalledWith(
+      'Login failed. Please check your email and password.'
+    );
   });
 
-  test('triggers throttled login function', async () => {
-    const mockLoginResponse = {
-      user: {
-        id: 1,
-        email: 'test@example.com',
-      },
+  it('throttles rapid sign-in attempts', async () => {
+    const mockResponse = {
+      user: { id: 1, email: 'test@example.com' },
       token: 'mock-token',
       role: 'user',
     };
-
-    // Mocking loginUser to resolve with mockLoginResponse
-    (Api.loginUser as jest.MockedFunction<typeof Api.loginUser>).mockResolvedValue(mockLoginResponse);
+    (loginUser as jest.Mock).mockResolvedValue(mockResponse);
 
     render(
       <MemoryRouter>
@@ -120,15 +122,31 @@ describe('LoginPage Component', () => {
     fireEvent.change(screen.getByPlaceholderText('Email'), {
       target: { value: 'test@example.com' },
     });
+
     fireEvent.change(screen.getByPlaceholderText('Password'), {
       target: { value: 'password123' },
     });
 
-    // Submit the form multiple times to ensure throttle is working
-    fireEvent.click(screen.getByRole('button', { name: /Sign In/i }));
-    fireEvent.click(screen.getByRole('button', { name: /Sign In/i }));
+    const signInButton = screen.getByRole('button', { name: /sign in/i });
 
-    // Wait for the login function to be called only once due to throttling
-    await waitFor(() => expect(Api.loginUser).toHaveBeenCalledTimes(1));
+    fireEvent.click(signInButton);
+    fireEvent.click(signInButton); // second click should be throttled
+
+    await waitFor(() => {
+      expect(loginUser).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('navigates to signup on button click', () => {
+    render(
+      <MemoryRouter>
+        <LoginPage />
+      </MemoryRouter>
+    );
+
+    const signUpButton = screen.getByRole('button', { name: /sign up/i });
+    fireEvent.click(signUpButton);
+
+    expect(mockedNavigate).toHaveBeenCalledWith('/signup');
   });
 });

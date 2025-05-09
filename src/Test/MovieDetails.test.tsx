@@ -1,90 +1,121 @@
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import MovieDetail from '../MovieDetails';
-import * as Api from '../Api';
+import { getMovieById } from '../Api';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
 
-jest.mock('../Api');
+// Mock API
+jest.mock('../Api', () => ({
+  getMovieById: jest.fn(),
+}));
 
-describe('MovieDetail Component', () => {
-  const mockOnClose = jest.fn();
+// Mock useNavigate
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
-  const mockMovie = {
-    id: 1,
-    title: 'Test Movie',
-    genre: 'Action',
-    release_year: 2022,
-    rating: 8.5,
-    actors: JSON.stringify(['Actor 1', 'Actor 2']),
-    country: 'USA',
-    director: 'Director Name',
-    duration: 120,
-    description: 'Test movie description',
-    language: 'English',
-    budget: '100000000',
-    box_office: '300000000',
-    poster_urls: ['https://example.com/poster.jpg'],
-    created_at: '2023-01-01',
-    updated_at: '2023-01-02',
-    user_id: 1,
+const mockMovie = {
+  id: 1,
+  title: 'Inception',
+  poster_url: 'https://example.com/poster.jpg',
+  genre: 'Sci-Fi',
+  rating: 8.8,
+  description: 'A mind-bending thriller.',
+  release_year: 2010,
+  duration: 148,
+  director: 'Christopher Nolan',
+};
+
+describe('MovieDetail', () => {
+  beforeEach(() => {
+    localStorage.setItem('token', 'dummy_token');
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    localStorage.clear();
+  });
+
+  const renderWithRouter = (ui: React.ReactNode, route: string) => {
+    window.history.pushState({}, 'Test page', route);
+    return render(
+      <MemoryRouter initialEntries={[route]}>
+        <Routes>
+          <Route path="/movie/:id" element={ui} />
+        </Routes>
+      </MemoryRouter>
+    );
   };
 
-  beforeEach(() => {
-    jest.clearAllMocks();
+  test('renders loading spinner initially', async () => {
+    (getMovieById as jest.Mock).mockResolvedValueOnce(mockMovie);
+
+    renderWithRouter(<MovieDetail />, '/movie/1');
+
+    expect(screen.getByRole('status')).toBeInTheDocument();
+
+    await waitFor(() => expect(getMovieById).toHaveBeenCalledWith(1));
   });
 
-  test('renders loading state initially', () => {
-    (Api.getMovieById as jest.Mock).mockReturnValue(new Promise(() => {})); // never resolves
-    render(<MovieDetail movieId={1} onClose={mockOnClose} />);
-    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+  test('renders movie details on successful fetch', async () => {
+    (getMovieById as jest.Mock).mockResolvedValueOnce(mockMovie);
+
+    renderWithRouter(<MovieDetail />, '/movie/1');
+
+    await screen.findByText('Inception');
+    expect(screen.getByText('A mind-bending thriller.')).toBeInTheDocument();
+    expect(screen.getByText('Release Year:')).toBeInTheDocument();
+    expect(screen.getByText('148 min')).toBeInTheDocument();
+    expect(screen.getByText('Christopher Nolan')).toBeInTheDocument();
   });
 
-  test('renders movie details after loading', async () => {
-    (Api.getMovieById as jest.Mock).mockResolvedValue(mockMovie);
-    render(<MovieDetail movieId={1} onClose={mockOnClose} />);
-    await waitFor(() => expect(screen.getByText(mockMovie.title)).toBeInTheDocument());
-    expect(screen.getByText(mockMovie.description)).toBeInTheDocument();
-    expect(screen.getByText(`Release Year:`)).toBeInTheDocument();
-    expect(screen.getByText(mockMovie.release_year.toString())).toBeInTheDocument();
-    expect(screen.getByText(`Duration:`)).toBeInTheDocument();
-    expect(screen.getByText(`${mockMovie.duration} min`)).toBeInTheDocument();
-    expect(screen.getByText(`Director:`)).toBeInTheDocument();
-    expect(screen.getByText(mockMovie.director)).toBeInTheDocument();
-    expect(screen.getByText(`Country:`)).toBeInTheDocument();
-    expect(screen.getByText(mockMovie.country)).toBeInTheDocument();
-    expect(screen.getByText(`Language:`)).toBeInTheDocument();
-    expect(screen.getByText(mockMovie.language)).toBeInTheDocument();
-    expect(screen.getByText(`Budget:`)).toBeInTheDocument();
-    expect(screen.getByText(`$100.0M`)).toBeInTheDocument();
-    expect(screen.getByText(`Box Office:`)).toBeInTheDocument();
-    expect(screen.getByText(`$300.0M`)).toBeInTheDocument();
-    expect(screen.getByText('Cast')).toBeInTheDocument();
-    expect(screen.getByText('Actor 1')).toBeInTheDocument();
-    expect(screen.getByText('Actor 2')).toBeInTheDocument();
+  test('shows error message if fetch fails', async () => {
+    (getMovieById as jest.Mock).mockRejectedValueOnce(new Error('Fetch failed'));
+
+    renderWithRouter(<MovieDetail />, '/movie/1');
+
+    const error = await screen.findByText(/Fetch failed/i);
+    expect(error).toBeInTheDocument();
   });
 
-  test('renders error message on fetch failure', async () => {
-    (Api.getMovieById as jest.Mock).mockRejectedValue(new Error('Failed to fetch'));
-    render(<MovieDetail movieId={1} onClose={mockOnClose} />);
-    await waitFor(() => expect(screen.getByText(/Failed to load movie details/i)).toBeInTheDocument());
+  test('calls onClose and navigates when close button clicked', async () => {
+    (getMovieById as jest.Mock).mockResolvedValueOnce(mockMovie);
+    const onCloseMock = jest.fn();
+
+    renderWithRouter(<MovieDetail onClose={onCloseMock} />, '/movie/1');
+
+    const closeButton = await screen.findByRole('button', { name: '' }); // SVG button
+    fireEvent.click(closeButton);
+
+    expect(onCloseMock).toHaveBeenCalled();
+    expect(mockNavigate).toHaveBeenCalledWith('/home');
   });
 
-  test('calls onClose when backdrop is clicked', () => {
-    (Api.getMovieById as jest.Mock).mockResolvedValue(mockMovie);
-    const { container } = render(<MovieDetail movieId={1} onClose={mockOnClose} />);
-    const backdrop = container.firstChild;
-    if (backdrop) {
-      fireEvent.click(backdrop);
-      expect(mockOnClose).toHaveBeenCalled();
-    }
+  test('navigates and calls onClose when clicking on backdrop', async () => {
+    (getMovieById as jest.Mock).mockResolvedValueOnce(mockMovie);
+    const onCloseMock = jest.fn();
+
+    const { container } = renderWithRouter(<MovieDetail onClose={onCloseMock} />, '/movie/1');
+
+    await screen.findByText('Inception');
+
+    const backdrop = container.querySelector('div.fixed') as HTMLElement;
+    fireEvent.click(backdrop);
+
+    expect(onCloseMock).toHaveBeenCalled();
+    expect(mockNavigate).toHaveBeenCalledWith('/home');
   });
 
-  test('does not call onClose when content is clicked', () => {
-    (Api.getMovieById as jest.Mock).mockResolvedValue(mockMovie);
-    const { container } = render(<MovieDetail movieId={1} onClose={mockOnClose} />);
-    const content = container.querySelector('div > div > div > div:nth-child(2)');
-    if (content) {
-      fireEvent.click(content);
-      expect(mockOnClose).not.toHaveBeenCalled();
-    }
+  test('redirects if token is missing', () => {
+    localStorage.removeItem('token');
+    renderWithRouter(<MovieDetail />, '/movie/1');
+    expect(mockNavigate).toHaveBeenCalledWith('/');
   });
 });

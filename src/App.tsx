@@ -8,6 +8,7 @@ import PricingPlans from "./PricingPlans";
 import AdminPanel from "./AdminPanel";
 import MovieDetail from "./MovieDetails";
 import { generateToken, messaging, onMessage } from "./notification/firebase";
+import Success from "./Success";
 
 // Protected Route component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -36,6 +37,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/home" element={<Dashboard />} />
         <Route path="/pricing" element={<PricingPlans />} />
+        <Route path="/success" element={<Success />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/movieDetails/:id" element={
           <ProtectedRoute>
