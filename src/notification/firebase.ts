@@ -2,6 +2,19 @@ import { initializeApp } from "firebase/app";
 import { deleteToken, getMessaging, getToken, onMessage } from "firebase/messaging";
 import { sendTokenToBackend } from "../Api";
 
+
+// ...existing code...
+const sendDeviceToken = async (token: string | null) => {
+  try {
+    if (!token || typeof token !== "string" || token.length < 50) {
+      throw new Error('Invalid token format');
+    }
+    
+    await sendTokenToBackend(token);
+  } catch (error) {
+    console.error('Error sending device token:', error);
+  }
+};
 const firebaseConfig = {
     apiKey: "AIzaSyCKt2wYuYzr0uKWe8o5jUE6p9wb-3lSK68",
     authDomain: "movie-explorer-5bc8a.firebaseapp.com",
@@ -77,7 +90,7 @@ export const monitorToken = async () => {
       throw error;
     });
 
-    if (token && typeof token !== "string" || token.length < 50) {
+    if (!token || typeof token !== "string" || token.length < 50) {
       console.warn("Monitored token appears invalid");
       return null;
     }

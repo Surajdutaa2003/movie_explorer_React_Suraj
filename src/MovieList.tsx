@@ -13,6 +13,12 @@ interface MovieListProps {
   onDeleteMovie?: (movieId: number) => Promise<void>;
 }
 
+interface MovieCardProps {
+  movie: Movie;
+  onMovieClick: (movie: Movie) => void;
+  onDeleteMovie?: (movieId: number) => Promise<void>;
+}
+
 const MovieList: React.FC<MovieListProps> = ({ movies, onMovieClick, onDeleteMovie }) => {
   const allMoviesSwiperRef = useRef<SwiperCore | null>(null);
   const trendingSwiperRef = useRef<SwiperCore | null>(null);

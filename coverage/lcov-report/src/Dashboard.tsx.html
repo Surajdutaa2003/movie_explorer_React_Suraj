@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/136</span>
+                <span class='fraction'>0/134</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/33</span>
+                <span class='fraction'>0/30</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/130</span>
+                <span class='fraction'>0/131</span>
             </div>
         
             
@@ -513,7 +513,20 @@
 <a name='L448'></a><a href='#L448'>448</a>
 <a name='L449'></a><a href='#L449'>449</a>
 <a name='L450'></a><a href='#L450'>450</a>
-<a name='L451'></a><a href='#L451'>451</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L451'></a><a href='#L451'>451</a>
+<a name='L452'></a><a href='#L452'>452</a>
+<a name='L453'></a><a href='#L453'>453</a>
+<a name='L454'></a><a href='#L454'>454</a>
+<a name='L455'></a><a href='#L455'>455</a>
+<a name='L456'></a><a href='#L456'>456</a>
+<a name='L457'></a><a href='#L457'>457</a>
+<a name='L458'></a><a href='#L458'>458</a>
+<a name='L459'></a><a href='#L459'>459</a>
+<a name='L460'></a><a href='#L460'>460</a>
+<a name='L461'></a><a href='#L461'>461</a>
+<a name='L462'></a><a href='#L462'>462</a>
+<a name='L463'></a><a href='#L463'>463</a>
+<a name='L464'></a><a href='#L464'>464</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -539,7 +552,15 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -622,8 +643,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -962,8 +989,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useState, useEffect, useCallback } from 'react';</span>
+<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useState, useEffect, useCallback } from 'react';</span>
 <span class="cstat-no" title="statement not covered" >import MovieList from './MovieList';</span>
 <span class="cstat-no" title="statement not covered" >import { Movie, logoutUser, deleteMovie } from './Api';</span>
 <span class="cstat-no" title="statement not covered" >import { searchMovieAPI } from './Api';</span>
@@ -989,7 +1015,15 @@ const Dashboard: React.FC = <span class="cstat-no" title="statement not covered"
   const [searchQuery, setSearchQuery] = <span class="cstat-no" title="statement not covered" >useState('');</span>
   const [selectedGenre, setSelectedGenre] = <span class="cstat-no" title="statement not covered" >useState('All');</span>
   const [movies, setMovies] = <span class="cstat-no" title="statement not covered" >useState&lt;Movie[]&gt;([]);</span>
-  const [genres, setGenres] = <span class="cstat-no" title="statement not covered" >useState&lt;string[]&gt;(['All']);</span>
+  // Initialize genres with predefined list
+  const [genres, setGenres] = <span class="cstat-no" title="statement not covered" >useState&lt;string[]&gt;([</span>
+    'All',
+    'Comedy',
+    'Horror',
+    'Thriller',
+    'Sci-Fi',
+    'Romance',
+  ]);
   const [loading, setLoading] = <span class="cstat-no" title="statement not covered" >useState&lt;boolean&gt;(true);</span>
   const [error, setError] = <span class="cstat-no" title="statement not covered" >useState&lt;string | null&gt;(null);</span>
   const [successMessage, setSuccessMessage] = <span class="cstat-no" title="statement not covered" >useState&lt;string | null&gt;(null);</span>
@@ -1031,14 +1065,14 @@ const Dashboard: React.FC = <span class="cstat-no" title="statement not covered"
 &nbsp;
   const debouncedSearch = <span class="cstat-no" title="statement not covered" >useDebounce(searchQuery, 3000);</span>
 &nbsp;
-  const fetchMovies = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async () =</span>&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span></span>
+  const fetchMovies = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
 <span class="cstat-no" title="statement not covered" >      setLoading(true);</span>
 <span class="cstat-no" title="statement not covered" >      setError(null);</span>
 <span class="cstat-no" title="statement not covered" >      setSuccessMessage(null);</span>
       const title = <span class="cstat-no" title="statement not covered" >debouncedSearch.trim();</span>
       const genre = <span class="cstat-no" title="statement not covered" >selectedGenre === 'All' ? undefined : selectedGenre;</span>
-      
+&nbsp;
       // Fetch all pages if there's a search query
 <span class="cstat-no" title="statement not covered" >      if (title) {</span>
         let allMovies: Movie[] = <span class="cstat-no" title="statement not covered" >[];</span>
@@ -1052,7 +1086,7 @@ const Dashboard: React.FC = <span class="cstat-no" title="statement not covered"
           }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >          allMovies = [...allMovies, ...response.movies];</span>
-          
+&nbsp;
 <span class="cstat-no" title="statement not covered" >          <span class="missing-if-branch" title="if path not taken" >I</span>if (currentPage &gt;= response.pagination.total_pages) {</span>
 <span class="cstat-no" title="statement not covered" >            hasMorePages = false;</span>
           }
@@ -1071,10 +1105,16 @@ const Dashboard: React.FC = <span class="cstat-no" title="statement not covered"
 <span class="cstat-no" title="statement not covered" >        setTotalPages(response.pagination.total_pages || 1);</span>
       }
 &nbsp;
-      // Update genres list
+      // Update genres list by merging predefined genres with fetched genres
+      const fetchedGenres = <span class="cstat-no" title="statement not covered" >Array.from(new Set(movies.map(<span class="fstat-no" title="function not covered" >(m</span>ovie: Movie) =&gt; <span class="cstat-no" title="statement not covered" >movie.genre)</span>));</span>
       const uniqueGenres = <span class="cstat-no" title="statement not covered" >[</span>
         'All',
-        ...Array.from(new Set(movies.map(<span class="fstat-no" title="function not covered" >(m</span>ovie: Movie) =&gt; <span class="cstat-no" title="statement not covered" >movie.genre)</span>)),
+        'Comedy',
+        'Horror',
+        'Thriller',
+        'Sci-Fi',
+        'Romance',
+        ...fetchedGenres.filter(<span class="fstat-no" title="function not covered" >(g</span>enre) =&gt; <span class="cstat-no" title="statement not covered" >!['All', 'Comedy', 'Horror', 'Thriller', 'Sci-Fi', 'Romance'].includes(genre))</span>,
       ];
 <span class="cstat-no" title="statement not covered" >      setGenres(uniqueGenres);</span>
     } catch (err: any) {
@@ -1087,7 +1127,7 @@ const Dashboard: React.FC = <span class="cstat-no" title="statement not covered"
   }, [debouncedSearch, selectedGenre, page]);
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-    const fetchSliderMovies = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async () =</span>&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span></span>
+    const fetchSliderMovies = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      try {</span>
 <span class="cstat-no" title="statement not covered" >        setSliderLoading(true);</span>
         const response = <span class="cstat-no" title="statement not covered" >await searchMovieAPI(1, '', undefined);</span>
@@ -1119,7 +1159,7 @@ const Dashboard: React.FC = <span class="cstat-no" title="statement not covered"
 <span class="cstat-no" title="statement not covered" >    setSelectedMovie(null);</span>
   };
 &nbsp;
-  const handleDeleteMovie = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async (m</span>ovieId: number) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span></span>
+  const handleDeleteMovie = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(movieId: number) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
 <span class="cstat-no" title="statement not covered" >      setError(null);</span>
 <span class="cstat-no" title="statement not covered" >      setSuccessMessage(null);</span>
@@ -1132,7 +1172,7 @@ const Dashboard: React.FC = <span class="cstat-no" title="statement not covered"
     }
   };
 &nbsp;
-  const handleLogout = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async () =</span>&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span></span>
+  const handleLogout = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
 <span class="cstat-no" title="statement not covered" >      await logoutUser();</span>
       // Remove all auth-related items from localStorage
@@ -1141,7 +1181,7 @@ const Dashboard: React.FC = <span class="cstat-no" title="statement not covered"
 <span class="cstat-no" title="statement not covered" >      localStorage.removeItem('email');</span>
 <span class="cstat-no" title="statement not covered" >      localStorage.removeItem('token');</span>
 <span class="cstat-no" title="statement not covered" >      localStorage.removeItem('user');</span>
-<span class="cstat-no" title="statement not covered" >      localStorage.removeItem('loginResponse'); </span>// Add this line
+<span class="cstat-no" title="statement not covered" >      localStorage.removeItem('loginResponse');</span>
 <span class="cstat-no" title="statement not covered" >      navigate('/login');</span>
     } catch (err: any) {
 <span class="cstat-no" title="statement not covered" >      console.error('Logout error:', err.message);</span>
@@ -1412,15 +1452,14 @@ const Dashboard: React.FC = <span class="cstat-no" title="statement not covered"
   );
 };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export default Dashboard;</span>
-// ss</pre></td></tr></table></pre>
+<span class="cstat-no" title="statement not covered" >export default Dashboard;</span></pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-09T08:21:31.114Z
+                at 2025-05-10T05:05:53.838Z
             </div>
         <script src="../prettify.js"></script>
         <script>

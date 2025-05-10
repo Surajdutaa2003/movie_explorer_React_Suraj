@@ -6,6 +6,11 @@ interface MovieCardProps {
   movie: Movie;
   onDeleteMovie?: (movieId: number) => Promise<void>;
 }
+interface MovieCardProps {
+  movie: Movie;
+  onDeleteMovie?: (movieId: number) => Promise<void>;
+  onMovieClick?: (movie: Movie) => void; // Temporary addition
+}
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie, onDeleteMovie }) => {
   const navigate = useNavigate();

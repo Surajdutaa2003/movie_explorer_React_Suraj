@@ -24,7 +24,15 @@ const Dashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('All');
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [genres, setGenres] = useState<string[]>(['All']);
+  // Initialize genres with predefined list
+  const [genres, setGenres] = useState<string[]>([
+    'All',
+    'Comedy',
+    'Horror',
+    'Thriller',
+    'Sci-Fi',
+    'Romance',
+  ]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -73,7 +81,7 @@ const Dashboard: React.FC = () => {
       setSuccessMessage(null);
       const title = debouncedSearch.trim();
       const genre = selectedGenre === 'All' ? undefined : selectedGenre;
-      
+
       // Fetch all pages if there's a search query
       if (title) {
         let allMovies: Movie[] = [];
@@ -87,7 +95,7 @@ const Dashboard: React.FC = () => {
           }
 
           allMovies = [...allMovies, ...response.movies];
-          
+
           if (currentPage >= response.pagination.total_pages) {
             hasMorePages = false;
           }
@@ -106,10 +114,16 @@ const Dashboard: React.FC = () => {
         setTotalPages(response.pagination.total_pages || 1);
       }
 
-      // Update genres list
+      // Update genres list by merging predefined genres with fetched genres
+      const fetchedGenres = Array.from(new Set(movies.map((movie: Movie) => movie.genre)));
       const uniqueGenres = [
         'All',
-        ...Array.from(new Set(movies.map((movie: Movie) => movie.genre))),
+        'Comedy',
+        'Horror',
+        'Thriller',
+        'Sci-Fi',
+        'Romance',
+        ...fetchedGenres.filter((genre) => !['All', 'Comedy', 'Horror', 'Thriller', 'Sci-Fi', 'Romance'].includes(genre)),
       ];
       setGenres(uniqueGenres);
     } catch (err: any) {
@@ -176,7 +190,7 @@ const Dashboard: React.FC = () => {
       localStorage.removeItem('email');
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      localStorage.removeItem('loginResponse'); // Add this line
+      localStorage.removeItem('loginResponse');
       navigate('/login');
     } catch (err: any) {
       console.error('Logout error:', err.message);
@@ -448,4 +462,3 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
-// ss

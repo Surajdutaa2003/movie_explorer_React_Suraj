@@ -23,23 +23,23 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">15.13% </span>
+                <span class="strong">16.19% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>23/152</span>
+                <span class='fraction'>23/142</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/195</span>
+                <span class='fraction'>0/75</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>0/11</span>
             </div>
         
             
@@ -974,7 +974,7 @@ const API_BASE_URL = 'https://movie-explorer-ror-vishal-kanojia.onrender.com/api
 const AALEKH_API_BASE_URL = 'https://movie-explorer-ror-aalekh-2ewg.onrender.com';
 &nbsp;
 // ------------------ Signup (Aalekh API with /users) ------------------
-export const signupUser = <span class="fstat-no" title="function not covered" >async (u</span>serData: SignupData): Promise&lt;AuthResponse&gt; =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+export const signupUser = <span class="fstat-no" title="function not covered" >async </span>(userData: SignupData): Promise&lt;AuthResponse&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const response = <span class="cstat-no" title="statement not covered" >await axios.post(</span>
       `${AALEKH_API_BASE_URL}/users`,
@@ -999,7 +999,7 @@ export const signupUser = <span class="fstat-no" title="function not covered" >a
 };
 &nbsp;
 // ------------------ Login (Aalekh API with /users/sign_in) ------------------
-export const loginUser = <span class="fstat-no" title="function not covered" >async (c</span>redentials: LoginData): Promise&lt;AuthResponse&gt; =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+export const loginUser = <span class="fstat-no" title="function not covered" >async </span>(credentials: LoginData): Promise&lt;AuthResponse&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const response = <span class="cstat-no" title="statement not covered" >await axios.post(</span>
       `${AALEKH_API_BASE_URL}/users/sign_in`,
@@ -1020,7 +1020,7 @@ export const loginUser = <span class="fstat-no" title="function not covered" >as
 };
 &nbsp;
 // ------------------ Logout (Aalekh API with /users/sign_out) ------------------
-export const logoutUser = <span class="fstat-no" title="function not covered" >async (): Promise&lt;{ message: string }&gt; =</span>&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+export const logoutUser = <span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;{ message: string }&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const token = <span class="cstat-no" title="statement not covered" >localStorage.getItem('token');</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!token) {</span>
@@ -1045,7 +1045,7 @@ export const logoutUser = <span class="fstat-no" title="function not covered" >a
 };
 &nbsp;
 // ------------------ Get Movies ------------------
-export const getMovies = <span class="fstat-no" title="function not covered" >async (p</span>age: number = <span class="branch-0 cbranch-no" title="branch not covered" >1)</span>: Promise&lt;MoviesResponse&gt; =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+export const getMovies = <span class="fstat-no" title="function not covered" >async </span>(page: number = <span class="branch-0 cbranch-no" title="branch not covered" >1)</span>: Promise&lt;MoviesResponse&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const token = <span class="cstat-no" title="statement not covered" >localStorage.getItem('token');</span>
     const response = <span class="cstat-no" title="statement not covered" >await axios.get(</span>
@@ -1068,7 +1068,7 @@ export const getMovies = <span class="fstat-no" title="function not covered" >as
 };
 &nbsp;
 // ------------------ Get Movie by ID ------------------
-export const getMovieById = <span class="fstat-no" title="function not covered" >async (i</span>d: number): Promise&lt;Movie&gt; =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+export const getMovieById = <span class="fstat-no" title="function not covered" >async </span>(id: number): Promise&lt;Movie&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const token = <span class="cstat-no" title="statement not covered" >localStorage.getItem('token');</span>
     const response = <span class="cstat-no" title="statement not covered" >await axios.get(</span>
@@ -1090,7 +1090,7 @@ export const getMovieById = <span class="fstat-no" title="function not covered" 
 };
 &nbsp;
 // ------------------ Search Movies ------------------
-export const searchMovieAPI = <span class="fstat-no" title="function not covered" >async (p</span>age: number = <span class="branch-0 cbranch-no" title="branch not covered" >1,</span> title: string, genre?: string): Promise&lt;MoviesResponse&gt; =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+export const searchMovieAPI = <span class="fstat-no" title="function not covered" >async </span>(page: number = <span class="branch-0 cbranch-no" title="branch not covered" >1,</span> title: string, genre?: string): Promise&lt;MoviesResponse&gt; =&gt; {
   const params: Record&lt;string, any&gt; = <span class="cstat-no" title="statement not covered" >{</span>
     title,
     page,
@@ -1133,7 +1133,7 @@ export const searchMovieAPI = <span class="fstat-no" title="function not covered
 };
 &nbsp;
 // ------------------ Create Movie ------------------
-export const createMovie = <span class="fstat-no" title="function not covered" >async (m</span>ovieData: MovieCreateData): Promise&lt;MovieCreateResponse&gt; =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+export const createMovie = <span class="fstat-no" title="function not covered" >async </span>(movieData: MovieCreateData): Promise&lt;MovieCreateResponse&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const token = <span class="cstat-no" title="statement not covered" >localStorage.getItem('token');</span>
     const formData = <span class="cstat-no" title="statement not covered" >new FormData();</span>
@@ -1182,7 +1182,7 @@ export const createMovie = <span class="fstat-no" title="function not covered" >
 };
 &nbsp;
 // ------------------ Update Movie ------------------
-export const updateMovie = <span class="fstat-no" title="function not covered" >async (i</span>d: number, movieData: MovieCreateData): Promise&lt;Movie&gt; =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+export const updateMovie = <span class="fstat-no" title="function not covered" >async </span>(id: number, movieData: MovieCreateData): Promise&lt;Movie&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const token = <span class="cstat-no" title="statement not covered" >localStorage.getItem('token');</span>
     const formData = <span class="cstat-no" title="statement not covered" >new FormData();</span>
@@ -1231,7 +1231,7 @@ export const updateMovie = <span class="fstat-no" title="function not covered" >
 };
 &nbsp;
 // ------------------ Send Device Token ------------------
-export const sendTokenToBackend = <span class="fstat-no" title="function not covered" >async (t</span>oken: string): Promise&lt;any&gt; =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+export const sendTokenToBackend = <span class="fstat-no" title="function not covered" >async </span>(token: string): Promise&lt;any&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const authToken = <span class="cstat-no" title="statement not covered" >localStorage.getItem('token');</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!authToken) {</span>
@@ -1264,7 +1264,7 @@ export const sendTokenToBackend = <span class="fstat-no" title="function not cov
   }
 };
 // ------------------ Delete Movie ------------------
-export const deleteMovie = <span class="fstat-no" title="function not covered" >async (i</span>d: number): Promise&lt;{ message: string }&gt; =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+export const deleteMovie = <span class="fstat-no" title="function not covered" >async </span>(id: number): Promise&lt;{ message: string }&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const token = <span class="cstat-no" title="statement not covered" >localStorage.getItem('token');</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!token) {</span>
@@ -1297,7 +1297,7 @@ export const deleteMovie = <span class="fstat-no" title="function not covered" >
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-09T08:21:31.114Z
+                at 2025-05-10T05:05:53.838Z
             </div>
         <script src="../prettify.js"></script>
         <script>
