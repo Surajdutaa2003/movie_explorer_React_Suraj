@@ -9,11 +9,11 @@ import {
   Divider,
 } from '@mui/material';
 import { MdEmail, MdLock, MdPerson, MdPhone } from 'react-icons/md';
-import { signupUser } from './Api'; // Using the signupUser function from Vishal API
+import { signupUser } from '../Api'; // Using the signupUser function from Vishal API
 import { FaApple } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import throttle from 'lodash/throttle';
-import LoginLogo from './assets/loginLogo.png';
+import LoginLogo from '../assets/loginLogo.png';
 
 interface SignupState {
   firstName: string;

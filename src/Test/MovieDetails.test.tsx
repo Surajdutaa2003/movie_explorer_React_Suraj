@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import MovieDetail from '../MovieDetails';
+import MovieDetail from '../component/MovieDetails';
 import { getMovieById } from '../Api';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import '@testing-library/jest-dom';

@@ -11,12 +11,12 @@ import {
 import { MdEmail, MdLock } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa";
-import LoginLogo from "./assets/loginLogo.png";
-import { loginUser } from "./Api";
-import { withNavigate } from "./withNavigate";
+import LoginLogo from "../assets/loginLogo.png";
+import { loginUser } from "../Api";
+import { withNavigate } from "../withNavigate";
 import { NavigateFunction } from "react-router-dom";
 import { throttle } from "lodash";
-import { getMovies } from "./Api";
+import { getMovies } from "../Api";
 
 interface LoginResponse {
   user: {

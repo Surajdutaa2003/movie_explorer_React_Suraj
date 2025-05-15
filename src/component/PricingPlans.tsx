@@ -223,8 +223,8 @@ import {
 } from '@mui/material';
 import { Check, ArrowForward } from '@mui/icons-material';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { createSubscription, confirmSubscription } from './subApi';
-import { Plan } from './Types';
+import { createSubscription, confirmSubscription } from '../subApi';
+import { Plan } from '../Types';
 
 export default function SubscriptionPage() {
   window.scrollTo(0, 0);

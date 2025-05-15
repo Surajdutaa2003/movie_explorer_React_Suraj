@@ -1,14 +1,14 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import LoginPage from "./LoginPage";
-import SignUpPage from "./SignupPage";
-import HomePage from "./HomePage";
-import Dashboard from "./Dashboard";
-import PricingPlans from "./PricingPlans";
-import AdminPanel from "./AdminPanel";
-import MovieDetail from "./MovieDetails";
+import LoginPage from "./pages/LoginPage";
+import SignUpPage from "./pages/SignupPage";
+import HomePage from "./pages/HomePage";
+import Dashboard from "./component/Dashboard";
+import PricingPlans from "./component/PricingPlans";
+import AdminPanel from "./component/AdminPanel";
+import MovieDetail from "./component/MovieDetails";
 import { generateToken, messaging, onMessage } from "./notification/firebase";
-import Success from "./Success";
+import Success from "./component/Success";
 import MovieFetcher from "./MovieFetcher";
 
 // Protected Route component

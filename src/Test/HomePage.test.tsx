@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import HomePage from '../HomePage';
+import HomePage from '../pages/HomePage';
 
 const mockNavigate = jest.fn();
 

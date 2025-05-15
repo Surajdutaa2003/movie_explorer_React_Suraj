@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import poster1 from "./assets/poster1.jpeg";
-import poster2 from "./assets/poster2.jpeg";
-import poster3 from "./assets/poster3.jpeg";
-import poster4 from "./assets/poster4.jpeg";
+import poster1 from "../assets/poster1.jpeg";
+import poster2 from "../assets/poster2.jpeg";
+import poster3 from "../assets/poster3.jpeg";
+import poster4 from "../assets/poster4.jpeg";
 
 interface Position {
   x: number;

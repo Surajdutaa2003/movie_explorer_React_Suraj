@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import LoginPage from '../LoginPage'; // update path as needed
+import LoginPage from '../pages/LoginPage'; // update path as needed
 import { loginUser } from '../Api'; // update path as needed
 import { MemoryRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';

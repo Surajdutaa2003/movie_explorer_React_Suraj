@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import MovieList from '../MovieList';
+import MovieList from '../component/MovieList';
 import { Movie } from '../Api'; // Import Movie interface from Api file
 
 // Mock Swiper and its components

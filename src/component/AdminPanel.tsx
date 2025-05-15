@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { createMovie, updateMovie, Movie } from './Api';
+import { createMovie, updateMovie, Movie } from '../Api';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 interface MovieFormData {

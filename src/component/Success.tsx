@@ -196,7 +196,7 @@ import {
   Button,
 } from '@mui/material';
 import { CheckCircle } from '@mui/icons-material';
-import { getSubscriptionStatus } from './subApi';
+import { getSubscriptionStatus } from '../subApi';
 
 const Success = () => {
   const [loading, setLoading] = useState(true);
@@ -338,3 +338,4 @@ const Success = () => {
 };
 
 export default Success;
+// ss

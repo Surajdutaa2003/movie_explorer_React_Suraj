@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Movie } from './Api';
+import { Movie } from '../Api';
 import { useNavigate } from 'react-router-dom';
 
 interface MovieCardProps {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getMovieById } from './Api'; // Import your API function
-import { Movie } from './Api'; // Import updated Movie interface
+import { getMovieById } from '../Api'; // Import your API function
+import { Movie } from '../Api'; // Import updated Movie interface
 
 interface MovieDetailProps {
   onClose?: () => void; // Make onClose optional

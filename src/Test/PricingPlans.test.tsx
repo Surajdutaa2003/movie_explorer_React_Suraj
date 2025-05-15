@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import PricingPlans from '../PricingPlans';
+import PricingPlans from '../component/PricingPlans';
 
 describe('PricingPlans Component', () => {
   test('renders heading and go back button', () => {

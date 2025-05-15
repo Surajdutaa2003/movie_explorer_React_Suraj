@@ -5,7 +5,7 @@ import { Autoplay, Navigation } from 'swiper/modules';
 import SwiperCore from 'swiper';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import { Movie } from './Api';
+import { Movie } from '../Api';
 
 interface MovieListProps {
   movies: Movie[];

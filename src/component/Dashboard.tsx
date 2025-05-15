@@ -1,13 +1,13 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import MovieList from './MovieList';
-import { Movie, logoutUser, deleteMovie, getMovies } from './Api';
+import { Movie, logoutUser, deleteMovie, getMovies } from '../Api';
 import { Link, useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import useDebounce from '../hooks/useDebounce';
 
 interface MovieListProps {
   movies: Movie[];
@@ -28,6 +28,7 @@ interface MoviesResponse {
 const Dashboard: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [selectedGenre, setSelectedGenre] = useState('All');
   const [movies, setMovies] = useState<Movie[]>([]);
   const [genres, setGenres] = useState<string[]>([
@@ -47,7 +48,6 @@ const Dashboard: React.FC = () => {
   const [sliderMovies, setSliderMovies] = useState<Movie[]>([]);
   const [sliderLoading, setSliderLoading] = useState<boolean>(true);
   const [sliderError, setSliderError] = useState<string | null>(null);
-  const navItems = ['Home', 'Movies', 'Series', 'My List'];
   const navigate = useNavigate();
 
   const userRole = localStorage.getItem('role');
@@ -58,17 +58,6 @@ const Dashboard: React.FC = () => {
     return firstFour ? firstFour.charAt(0).toUpperCase() + firstFour.slice(1) : 'User';
   })();
 
-  const useDebounce = (value: string, delay: number) => {
-    const [debouncedValue, setDebouncedValue] = useState(value);
-    useEffect(() => {
-      const handler = setTimeout(() => setDebouncedValue(value), delay);
-      return () => clearTimeout(handler);
-    }, [value, delay]);
-    return debouncedValue;
-  };
-
-  const debouncedSearch = useDebounce(searchQuery, 500);
-
   const fetchMovies = useCallback(async () => {
     try {
       setLoading(true);
@@ -76,7 +65,7 @@ const Dashboard: React.FC = () => {
       setSuccessMessage(null);
 
       const filters: { page?: number; title?: string; genre?: string } = { page };
-      if (debouncedSearch) filters.title = debouncedSearch;
+      if (debouncedSearchQuery) filters.title = debouncedSearchQuery;
       if (selectedGenre !== 'All') filters.genre = selectedGenre;
 
       const response = await getMovies(filters);
@@ -104,7 +93,7 @@ const Dashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [debouncedSearch, selectedGenre, page]);
+  }, [debouncedSearchQuery, selectedGenre, page]);
 
   useEffect(() => {
     const fetchSliderMovies = async () => {
@@ -133,6 +122,10 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     fetchMovies();
   }, [fetchMovies]);
+
+  useEffect(() => {
+    fetchMovies();
+  }, [debouncedSearchQuery]);
 
   const openMovieDetail = (movie: Movie) => {
     setSelectedMovie(movie);
@@ -175,6 +168,10 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
   return (
     <div className="min-h-screen bg-white text-gray-900 font-sans">
       <style>
@@ -213,15 +210,6 @@ const Dashboard: React.FC = () => {
             </button>
           </div>
           <div className="hidden md:flex items-center space-x-6">
-            {navItems.map((item) => (
-              <Link
-                key={item}
-                to={item === 'Home' ? '/home' : `/${item.toLowerCase()}`}
-                className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
-              >
-                {item}
-              </Link>
-            ))}
             {userRole === 'supervisor' && (
               <Link
                 to="/admin"
@@ -240,12 +228,19 @@ const Dashboard: React.FC = () => {
             )}
             <div className="relative group">
               <div className="flex items-center space-x-2 cursor-pointer">
-                <img
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tb:ANd9GcQuvwJG3J0AvDmbaE8_obrEW5IHHEB2zDaYEw&s"
-                  alt="User"
-                  className="w-8 h-8 rounded-full"
-                />
-                <span className="text-sm text-gray-700">{displayName}</span>
+                <svg 
+                  className="w-8 h-8 text-gray-600" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth="2" 
+                    d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
               </div>
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg dropdown-menu">
                 <Link
@@ -269,16 +264,6 @@ const Dashboard: React.FC = () => {
       {menuOpen && (
         <div className="md:hidden bg-white p-4 border-b border-gray-200 shadow-lg">
           <div className="flex flex-col space-y-2">
-            {navItems.map((item) => (
-              <Link
-                key={item}
-                to={item === 'Home' ? '/home' : `/${item.toLowerCase()}`}
-                className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
-                onClick={() => setMenuOpen(false)}
-              >
-                {item}
-              </Link>
-            ))}
             {userRole === 'supervisor' && (
               <Link
                 to="/admin"
@@ -297,6 +282,13 @@ const Dashboard: React.FC = () => {
                 Subscribe
               </Link>
             )}
+            <Link
+              to="/profile"
+              className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
+              onClick={() => setMenuOpen(false)}
+            >
+              Profile
+            </Link>
             <button
               onClick={handleLogout}
               className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200 text-left"
