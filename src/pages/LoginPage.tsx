@@ -3,20 +3,17 @@ import {
   Box,
   TextField,
   Button,
-  Divider,
   Typography,
   Paper,
   Stack,
 } from "@mui/material";
 import { MdEmail, MdLock } from "react-icons/md";
-import { FcGoogle } from "react-icons/fc";
-import { FaApple } from "react-icons/fa";
 import LoginLogo from "../assets/loginLogo.png";
 import { loginUser } from "../Api";
 import { withNavigate } from "../withNavigate";
 import { NavigateFunction } from "react-router-dom";
 import { throttle } from "lodash";
-import { getMovies } from "../Api";
+import toast, { Toaster } from "react-hot-toast";
 
 interface LoginResponse {
   user: {
@@ -72,17 +69,29 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
 
     if (!email || !password) {
       this.setState({ error: "Please fill in both email and password" });
+      toast.error("Please fill in both email and password", {
+        duration: 4000,
+        position: "top-right",
+      });
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       this.setState({ error: "Please enter a valid email address" });
+      toast.error("Please enter a valid email address", {
+        duration: 4000,
+        position: "top-right",
+      });
       return;
     }
 
     if (password.length < 8) {
       this.setState({ error: "Password must be at least 8 characters long" });
+      toast.error("Password must be at least 8 characters long", {
+        duration: 4000,
+        position: "top-right",
+      });
       return;
     }
 
@@ -100,21 +109,30 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
       console.log("Stored token:", localStorage.getItem("token"));
       console.log("Stored role:", localStorage.getItem("role"));
 
-      alert("Login successful!");
-      // const res =  await getMovies(response.token);
-      navigate("/home");
+      toast.success("Login successful!", {
+        duration: 3000,
+        position: "top-right",
+        style: {
+          background: "#4caf50",
+          color: "#fff",
+          padding: "16px",
+          borderRadius: "8px",
+        },
+      });
+
+      // Delay navigation to allow toast to display
+      setTimeout(() => {
+        navigate("/home");
+      }, 1500);
     } catch (error: any) {
       const errorMessage = error.message || "Login failed. Please check your email and password.";
       this.setState({ error: errorMessage });
+      toast.error(errorMessage, {
+        duration: 4000,
+        position: "top-right",
+      });
       console.error("Login error:", error);
     }
-  };
-
-  // Temporary button to clear localStorage for testing
-  clearStorage = () => {
-    localStorage.clear();
-    console.log("localStorage cleared");
-    this.setState({ error: "localStorage cleared. Please log in again." });
   };
 
   render() {
@@ -131,6 +149,7 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
         px={2}
         bgcolor="#EDEEF0"
       >
+        <Toaster />
         <Box display="flex" flexDirection="column" alignItems="center" mb={5}>
           <Box
             width={300}
@@ -208,41 +227,6 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
             >
               Sign In
             </Button>
-
-            {/* Temporary button for clearing localStorage */}
-            <Button
-              fullWidth
-              variant="outlined"
-              sx={{ mt: 1 }}
-              onClick={this.clearStorage}
-            >
-              Clear Storage (Debug)
-            </Button>
-          </Stack>
-
-          <Divider sx={{ my: 3 }}>
-            <Typography variant="body2" color="textSecondary">
-              OR
-            </Typography>
-          </Divider>
-
-          <Stack spacing={1.5}>
-            <Button
-              fullWidth
-              variant="outlined"
-              startIcon={<FcGoogle />}
-              sx={{ textTransform: "none" }}
-            >
-              Continue with Google
-            </Button>
-            <Button
-              fullWidth
-              variant="outlined"
-              startIcon={<FaApple />}
-              sx={{ textTransform: "none" }}
-            >
-              Continue with Apple
-            </Button>
           </Stack>
 
           <Box mt={2} textAlign="center">
@@ -263,4 +247,3 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
 }
 
 export default withNavigate(LoginPage);
-// ss
