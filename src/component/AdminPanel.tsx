@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { createMovie, updateMovie, Movie } from '../Api';
+import { createMovie, updateMovie, Movie } from '../services/Api';
 import { useLocation, useNavigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
 
 interface MovieFormData {
   title: string;
@@ -85,8 +86,9 @@ const AdminPanel: React.FC = () => {
     setError(null);
     setSuccess(null);
 
+    const loadingToast = toast.loading(isEditMode ? 'Updating movie...' : 'Adding movie...');
+
     try {
-      // Validate required fields
       const requiredFields: (keyof MovieFormData)[] = [
         'title', 'genre', 'release_year', 'rating', 'director', 'duration',
         'description', 'main_lead', 'streaming_platform'
@@ -97,23 +99,19 @@ const AdminPanel: React.FC = () => {
         }
       }
 
-      // Validate rating
       if (formData.rating < 0 || formData.rating > 10) {
         throw new Error('Rating must be between 0 and 10.');
       }
 
-      // Validate description length
       if (formData.description.length > 1000) {
         throw new Error('Description must be 1000 characters or less.');
       }
 
-      // Validate streaming platform
       const validPlatforms = ['Amazon Prime', 'Netflix', 'Jio Hotstar', 'Netflix Zee5', 'Netflix Amazon Prime'];
       if (!validPlatforms.includes(formData.streaming_platform)) {
         throw new Error('Please select a valid streaming platform.');
       }
 
-      // Prepare data for API
       const movieData: MovieFormData = {
         ...formData,
         rating: formData.rating,
@@ -121,14 +119,12 @@ const AdminPanel: React.FC = () => {
       };
 
       if (isEditMode && movie) {
-        // Call updateMovie API for editing
         const response = await updateMovie(movie.id, movieData);
-        setSuccess('Movie updated successfully!');
-        navigate('/home');
+        toast.success('Movie updated successfully!', { id: loadingToast });
+        navigate('/');
       } else {
-        // Call createMovie API for adding
         const response = await createMovie(movieData);
-        setSuccess(response.message || 'Movie added successfully!');
+        toast.success('Movie added successfully!', { id: loadingToast });
         setFormData({
           title: '',
           genre: '',
@@ -146,20 +142,21 @@ const AdminPanel: React.FC = () => {
       }
     } catch (err: any) {
       if (err.message.includes('Session expired') || err.message.includes('Unauthorized')) {
-        setError('Your session has expired. Please log in again.');
+        toast.error('Your session has expired. Please log in again.', { id: loadingToast });
         navigate('/login');
       } else {
-        setError(err.message || `Failed to ${isEditMode ? 'update' : 'add'} movie. Please try again.`);
+        toast.error(err.message || `Failed to ${isEditMode ? 'update' : 'add'} movie.`, { id: loadingToast });
       }
     }
   };
 
   const handleGoBack = () => {
-    navigate('/home');
+    navigate('/');
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 p-8">
+      <Toaster position="top-right" />
       <div className="max-w-3xl mx-auto">
         <header className="text-center mb-10">
           <h1 className="text-4xl font-extrabold text-gray-800 bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent drop-shadow-md">
@@ -202,16 +199,26 @@ const AdminPanel: React.FC = () => {
 
             <div>
               <label htmlFor="genre" className="block text-sm font-semibold text-gray-700">Genre *</label>
-              <input
-                type="text"
+              <select
                 id="genre"
                 name="genre"
                 value={formData.genre}
                 onChange={handleChange}
                 required
                 className="mt-2 block w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 shadow-inner"
-                placeholder="e.g., Drama"
-              />
+              >
+                <option value="" disabled>Select a genre</option>
+                <option value="Action">Action</option>
+                <option value="Comedy">Comedy</option>
+                <option value="Drama">Drama</option>
+                <option value="Horror">Horror</option>
+                <option value="Science Fiction">Sci-fi</option>
+                <option value="Romance">Romance</option>
+                <option value="Thriller">Thriller</option>
+                <option value="Crime">Crime</option>
+              <option value="Anime">Anime</option>
+
+              </select>
             </div>
 
             <div>
@@ -318,8 +325,8 @@ const AdminPanel: React.FC = () => {
                 <option value="" disabled>Select a platform</option>
                 <option value="Amazon Prime">Amazon Prime</option>
                 <option value="Netflix">Netflix</option>
-                <option value="Jio Hotstar flop">Jio Hotstar</option>
-                <option value="Netflix Zee5">Netflix Zee5</option>
+                <option value="Jio Hotstar">Jio Hotstar</option>
+                <option value="Netherlands Zee5">Netflix Zee5</option>
                 <option value="Netflix Amazon Prime">Netflix Amazon Prime</option>
               </select>
             </div>

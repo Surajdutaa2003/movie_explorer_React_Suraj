@@ -1,88 +1,190 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import MovieList from '../component/MovieList';
-import { Movie } from '../Api'; // Import Movie interface from Api file
+import { Movie } from '../services/Api';
 
-// Mock Swiper and its components
-jest.mock('swiper/react', () => ({
-  Swiper: ({ children }: any) => <div>{children}</div>,
-  SwiperSlide: ({ children }: any) => <div>{children}</div>,
-}));
+// Mock the child components
+jest.mock('../component/MovieCard', () => {
+  return jest.fn(({ movie, onMovieClick, onDeleteMovie }) => (
+    <div data-testid={`movie-card-${movie.id}`}>
+      {movie.title}
+      <button onClick={() => onMovieClick(movie)}>Click</button>
+      {onDeleteMovie && <button onClick={() => onDeleteMovie(movie.id)}>Delete</button>}
+    </div>
+  ));
+});
+
+jest.mock('../hooks/useSwiper', () => {
+  return jest.fn(({ items, renderItem, sectionName }) => (
+    <div data-testid={`swiper-${sectionName}`}>
+      {items.map((item: Movie) => (
+        <div key={item.id}>{renderItem(item)}</div>
+      ))}
+    </div>
+  ));
+});
 
 const mockMovies: Movie[] = [
   {
     id: 1,
-    title: 'Inception',
-    poster_url: 'https://example.com/inception.jpg',
-    genre: 'Sci-Fi',
-    rating: 8.8,
-    release_year: 2010,
-    director: 'Christopher Nolan',
-    duration: 148,
-    description: 'A thief who steals corporate secrets through dream-sharing technology.',
+    title: 'Movie 1',
+    genre: 'Action',
+    release_year: 2020,
+    rating: "8.0",
+    director: 'John Doe',
+    duration: 120,
+    description: 'An action-packed adventure.',
     premium: false,
-    main_lead: 'Leonardo DiCaprio',
+    main_lead: 'Jane Smith',
     streaming_platform: 'Netflix',
-    banner_url: 'https://example.com/inception-banner.jpg'
+    poster_url: 'poster1.jpg',
+    banner_url: 'banner1.jpg',
   },
   {
     id: 2,
-    title: 'Interstellar',
-    poster_url: 'https://example.com/interstellar.jpg',
-    genre: 'Adventure',
-    rating: 8.6,
-    release_year: 2014,
-    director: 'Christopher Nolan',
-    duration: 169,
-    description: 'A team of explorers travel through a wormhole in space.',
+    title: 'Movie 2',
+    genre: 'Comedy',
+    release_year: 2021,
+    rating: "7.0",
+    director: 'Alice Brown',
+    duration: 100,
+    description: 'A hilarious comedy.',
+    premium: true,
+    main_lead: 'Bob Johnson',
+    streaming_platform: 'Hulu',
+    poster_url: 'poster2.jpg',
+    banner_url: 'banner2.jpg',
+  },
+  {
+    id: 3,
+    title: 'Movie 3',
+    genre: 'Drama',
+    release_year: 2022,
+    rating:" 9.0",
+    director: 'Emma Wilson',
+    duration: 140,
+    description: 'A gripping drama.',
     premium: false,
-    main_lead: 'Matthew McConaughey',
+    main_lead: 'Tom Davis',
     streaming_platform: 'Amazon Prime',
-    banner_url: 'https://example.com/interstellar-banner.jpg'
+    poster_url: 'poster3.jpg',
+    banner_url: 'banner3.jpg',
   },
 ];
 
-describe('MovieList Component', () => {
-  const onMovieClick = jest.fn();
-  const onDeleteMovie = jest.fn();
+const mockOnMovieClick = jest.fn();
+const mockOnDeleteMovie = jest.fn();
 
+describe('MovieList', () => {
   beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders all sections with movies', () => {
     render(
       <MovieList
         movies={mockMovies}
-        onMovieClick={onMovieClick}
-        onDeleteMovie={onDeleteMovie}
+        onMovieClick={mockOnMovieClick}
+        onDeleteMovie={mockOnDeleteMovie}
       />
     );
-  });
 
-  it('renders All Movies section', () => {
+    // Check section headers
     expect(screen.getByText('All Movies')).toBeInTheDocument();
-    expect(screen.getByText('Inception')).toBeInTheDocument();
-    expect(screen.getByText('Interstellar')).toBeInTheDocument();
+    expect(screen.getByText('Trending Now')).toBeInTheDocument();
+    expect(screen.getByText('All time Favourites')).toBeInTheDocument();
+
+    // Check swipers
+    expect(screen.getByTestId('swiper-all')).toBeInTheDocument();
+    expect(screen.getByTestId('swiper-trending')).toBeInTheDocument();
+    expect(screen.getByTestId('swiper-favorites')).toBeInTheDocument();
+
+    // Check movie cards in each section
+    expect(screen.getAllByTestId(/movie-card-/).length).toBe(7); // 3 in all, 3 in trending, 2 in favorites
+
   });
 
-  it('renders Watchlist section correctly', () => {
-    expect(screen.getByText('Watchlist')).toBeInTheDocument();
-    expect(screen.getByText('Interstellar')).toBeInTheDocument();
-    expect(screen.queryByText('Inception')).not.toHaveTextContent('Watchlist');
+  it('renders no movies message when movies array is empty', () => {
+    render(
+      <MovieList
+        movies={[]}
+        onMovieClick={mockOnMovieClick}
+        onDeleteMovie={mockOnDeleteMovie}
+      />
+    );
+
+    expect(screen.getAllByText('No movies available.')).toHaveLength(1);
+    expect(screen.getAllByText('No trending movies available.')).toHaveLength(1);
+    expect(screen.getAllByText('No movies with rating 8.8 or higher available.')).toHaveLength(1);
+    expect(screen.queryByTestId(/swiper-/)).not.toBeInTheDocument();
   });
 
-  it('renders Favourites section correctly', () => {
-    expect(screen.getByText('Favourites')).toBeInTheDocument();
-    expect(screen.getByText('Inception')).toBeInTheDocument();
-    expect(screen.queryByText('Interstellar')).not.toHaveTextContent('Favourites');
+  it('filters trending movies correctly', () => {
+    render(
+      <MovieList
+        movies={mockMovies}
+        onMovieClick={mockOnMovieClick}
+        onDeleteMovie={mockOnDeleteMovie}
+      />
+    );
+
+    const trendingSwiper = screen.getByTestId('swiper-trending');
+    expect(trendingSwiper).toContainElement(screen.getByText('Movie 1'));
+    expect(trendingSwiper).toContainElement(screen.getByText('Movie 3'));
+    expect(trendingSwiper).not.toContainElement(screen.getByText('Movie 2'));
   });
 
-  it('calls onMovieClick when movie image is clicked', () => {
-    const image = screen.getByAltText('Inception');
-    fireEvent.click(image);
-    expect(onMovieClick).toHaveBeenCalledWith(mockMovies[0]);
+  it('filters all time favorites correctly', () => {
+    render(
+      <MovieList
+        movies={mockMovies}
+        onMovieClick={mockOnMovieClick}
+        onDeleteMovie={mockOnDeleteMovie}
+      />
+    );
+
+    const favoritesSwiper = screen.getByTestId('swiper-favorites');
+    expect(favoritesSwiper).toContainElement(screen.getByText('Movie 1'));
+    expect(favoritesSwiper).toContainElement(screen.getByText('Movie 3'));
+    expect(favoritesSwiper).not.toContainElement(screen.getByText('Movie 2'));
   });
 
-  it('calls onDeleteMovie when delete icon is clicked', () => {
-    const deleteButtons = screen.getAllByLabelText('Delete');
-    fireEvent.click(deleteButtons[0]);
-    expect(onDeleteMovie).toHaveBeenCalledWith(mockMovies[0].id);
+  it('calls onMovieClick when movie card is clicked', () => {
+    render(
+      <MovieList
+        movies={mockMovies}
+        onMovieClick={mockOnMovieClick}
+        onDeleteMovie={mockOnDeleteMovie}
+      />
+    );
+
+    const movieButton = screen.getAllByText('Click')[0];
+    movieButton.click();
+    expect(mockOnMovieClick).toHaveBeenCalledWith(mockMovies[0]);
+  });
+
+  it('calls onDeleteMovie when delete button is clicked', () => {
+    render(
+      <MovieList
+        movies={mockMovies}
+        onMovieClick={mockOnMovieClick}
+        onDeleteMovie={mockOnDeleteMovie}
+      />
+    );
+
+    const deleteButton = screen.getAllByText('Delete')[0];
+    deleteButton.click();
+    expect(mockOnDeleteMovie).toHaveBeenCalledWith(mockMovies[0].id);
+  });
+
+  it('renders without onDeleteMovie prop', () => {
+    render(
+      <MovieList
+        movies={mockMovies}
+        onMovieClick={mockOnMovieClick}
+      />
+    );
+
+    expect(screen.getByText('All Movies')).toBeInTheDocument();
+    expect(screen.queryAllByText('Delete')).toHaveLength(0);
   });
 });

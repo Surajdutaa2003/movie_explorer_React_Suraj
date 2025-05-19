@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getMovieById } from '../Api'; // Import your API function
-import { Movie } from '../Api'; // Import updated Movie interface
+import { motion, Variants } from 'framer-motion';
+import { getMovieById } from '../services/Api';
+import { Movie } from '../services/Api';
 
 interface MovieDetailProps {
-  onClose?: () => void; // Make onClose optional
+  onClose?: () => void;
 }
 
 const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
-  const { id } = useParams<{ id: string }>(); // Get the movie ID from the URL
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -17,7 +18,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
 
   useEffect(() => {
     if (!token) {
-      navigate('/'); // Redirect to home if no token
+      navigate('/');
     }
   }, [navigate, token]);
 
@@ -43,28 +44,74 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
 
   if (!id || !token) return null;
 
-  // Close the modal when clicking the backdrop
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       console.log('Backdrop clicked, calling onClose and navigating');
       onClose();
-      navigate('/home');
+      navigate('/');
     }
   };
 
-  // Handle close button click
   const handleClose = (e: React.MouseEvent) => {
     e.stopPropagation();
     console.log('Close button clicked, calling onClose and navigating');
     onClose();
-    navigate('/home');
+    navigate('/');
   };
 
-  // Handle subscribe button click
   const handleSubscribe = (e: React.MouseEvent) => {
     e.stopPropagation();
     console.log('Navigating to pricing page');
     navigate('/pricing');
+  };
+
+  // Animation variants for the card (coin-like rotation)
+  const cardVariants = {
+    hidden: { rotateY: -180, opacity: 0 },
+    visible: {
+      rotateY: 0,
+      opacity: 1,
+      transition: { duration: 0.8, ease: 'easeOut' },
+    },
+  };
+
+  // Animation variants for text characters (wave-like from left)
+  const textContainerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.03, // Stagger each character
+        delayChildren: 0.8, // Start after card animation
+      },
+    },
+  };
+
+  const textChildVariants: Variants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.3, ease: 'easeOut' },
+    },
+  };
+
+  // Component to animate text character by character
+  const AnimatedText: React.FC<{ text: string; className?: string }> = ({ text, className }) => {
+    return (
+      <motion.span
+        className={className}
+        variants={textContainerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        {text.split('').map((char, index) => (
+          <motion.span key={index} variants={textChildVariants} className="inline-block">
+            {char === ' ' ? '\u00A0' : char}
+          </motion.span>
+        ))}
+      </motion.span>
+    );
   };
 
   return (
@@ -84,14 +131,19 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
       }}
       onClick={handleBackdropClick}
     >
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+      <motion.div
+        className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+        variants={cardVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {loading ? (
           <div className="flex items-center justify-center h-96">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
           </div>
         ) : error ? (
           <div className="p-6 text-center">
-            <p className="text-blue-500">Subscribe to premium to watch this content</p>
+            <AnimatedText text="Subscribe to premium to watch this content" className="text-blue-500" />
             <button
               className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400"
               onClick={handleSubscribe}
@@ -101,7 +153,6 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
           </div>
         ) : movie ? (
           <div className="relative">
-            {/* Close button */}
             <button
               className="absolute top-4 right-4 text-gray-700 hover:text-gray-900 bg-white rounded-full p-1 shadow-md z-10"
               onClick={handleClose}
@@ -123,7 +174,6 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
             </button>
 
             <div className="md:flex">
-              {/* Movie poster */}
               <div className="md:w-1/3 p-4">
                 <div className="h-[400px] overflow-hidden rounded-lg shadow-lg">
                   <img
@@ -137,14 +187,17 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
                 </div>
               </div>
 
-              {/* Movie details */}
               <div className="md:w-2/3 p-6">
-                <h2 className="text-3xl font-bold text-gray-800 mb-2">{movie.title}</h2>
+                <AnimatedText
+                  text={movie.title}
+                  className="text-3xl font-bold text-gray-800 mb-2"
+                />
 
                 <div className="flex items-center space-x-2 mb-4">
-                  <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded">
-                    {movie.genre}
-                  </span>
+                  <AnimatedText
+                    text={movie.genre}
+                    className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded"
+                  />
                   <div className="flex items-center text-yellow-500">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -159,11 +212,17 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
                     >
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
-                    <span className="ml-1">{Number(movie.rating).toFixed(1)}</span>
+                    <AnimatedText
+                      text={Number(movie.rating).toFixed(1)}
+                      className="ml-1 text-yellow-500"
+                    />
                   </div>
                 </div>
 
-                <p className="text-gray-700 mb-6">{movie.description}</p>
+                <AnimatedText
+                  text={movie.description}
+                  className="text-gray-700 mb-6"
+                />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div className="flex items-center">
@@ -184,8 +243,11 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
                       <line x1="8" y1="2" x2="8" y2="6"></line>
                       <line x1="3" y1="10" x2="21" y2="10"></line>
                     </svg>
-                    <span className="text-sm text-gray-600">Release Year:</span>
-                    <span className="ml-2 text-gray-800">{movie.release_year}</span>
+                    <AnimatedText text="Release Year:" className="text-sm text-gray-600" />
+                    <AnimatedText
+                      text={movie.release_year.toString()}
+                      className="ml-2 text-gray-800"
+                    />
                   </div>
 
                   <div className="flex items-center">
@@ -204,8 +266,11 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
                       <circle cx="12" cy="12" r="10"></circle>
                       <polyline points="12 6 12 12 16 14"></polyline>
                     </svg>
-                    <span className="text-sm text-gray-600">Duration:</span>
-                    <span className="ml-2 text-gray-800">{movie.duration} min</span>
+                    <AnimatedText text="Duration:" className="text-sm text-gray-600" />
+                    <AnimatedText
+                      text={`${movie.duration} min`}
+                      className="ml-2 text-gray-800"
+                    />
                   </div>
 
                   <div className="flex items-center">
@@ -223,8 +288,8 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
                     >
                       <path d="M12 20.99V20H8A4 4 0 018 12h1M12 8V4a4 4 0 100 8z"></path>
                     </svg>
-                    <span className="text-sm text-gray-600">Director:</span>
-                    <span className="ml-2 text-gray-800">{movie.director}</span>
+                    <AnimatedText text="Director:" className="text-sm text-gray-600" />
+                    <AnimatedText text={movie.director} className="ml-2 text-gray-800" />
                   </div>
 
                   <div className="flex items-center">
@@ -243,8 +308,8 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
                       <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path>
                       <circle cx="12" cy="7" r="4"></circle>
                     </svg>
-                    <span className="text-sm text-gray-600">Main Lead:</span>
-                    <span className="ml-2 text-gray-800">{movie.main_lead}</span>
+                    <AnimatedText text="Main Lead:" className="text-sm text-gray-600" />
+                    <AnimatedText text={movie.main_lead} className="ml-2 text-gray-800" />
                   </div>
 
                   <div className="flex items-center">
@@ -264,8 +329,11 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
                       <line x1="8" y1="21" x2="16" y2="21"></line>
                       <line x1="12" y1="17" x2="12" y2="21"></line>
                     </svg>
-                    <span className="text-sm text-gray-600">Streaming Platform:</span>
-                    <span className="ml-2 text-gray-800">{movie.streaming_platform}</span>
+                    <AnimatedText text="Streaming Platform:" className="text-sm text-gray-600" />
+                    <AnimatedText
+                      text={movie.streaming_platform}
+                      className="ml-2 text-gray-800"
+                    />
                   </div>
 
                   <div className="flex items-center">
@@ -283,17 +351,20 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
                     >
                       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                     </svg>
-                    <span className="text-sm text-gray-600">Premium:</span>
-                    <span className="ml-2 text-gray-800">{movie.premium ? 'Yes' : 'No'}</span>
+                    <AnimatedText text="Premium:" className="text-sm text-gray-600" />
+                    <AnimatedText
+                      text={movie.premium ? 'Yes' : 'No'}
+                      className="ml-2 text-gray-800"
+                    />
                   </div>
                 </div>
               </div>
             </div>
           </div>
         ) : (
-          <p className="text-center text-gray-700">Movie not found</p>
+          <AnimatedText text="Movie not found" className="text-center text-gray-700" />
         )}
-      </div>
+      </motion.div>
     </div>
   );
 };

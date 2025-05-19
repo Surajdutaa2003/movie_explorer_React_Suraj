@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { deleteToken, getMessaging, getToken, onMessage } from "firebase/messaging";
-import { sendTokenToBackend } from "../Api";
+import { sendTokenToBackend } from "../services/Api";
 
 
 // ...existing code...

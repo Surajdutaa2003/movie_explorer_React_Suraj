@@ -1,13 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import MovieList from './MovieList';
-import { Movie, logoutUser, deleteMovie, getMovies } from '../Api';
+import { Movie, logoutUser, deleteMovie } from '../services/Api';
 import { Link, useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
-import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import useDebounce from '../hooks/useDebounce';
+import { fetchMovies, setPage, setSearchQuery, setSelectedGenre } from '../redux/movieSlice';
+import { fetchSliderMovies } from '../redux/sliderSlice';
+import { RootState, AppDispatch } from '../redux/store';
 
 interface MovieListProps {
   movies: Movie[];
@@ -15,117 +18,61 @@ interface MovieListProps {
   onDeleteMovie?: (movieId: number) => Promise<void>;
 }
 
-interface MoviesResponse {
-  movies: Movie[];
-  meta: {
-    current_page: number;
-    total_pages: number;
-    total_count: number;
-    per_page?: number;
-  };
-}
-
 const Dashboard: React.FC = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const debouncedSearchQuery = useDebounce(searchQuery, 500);
-  const [selectedGenre, setSelectedGenre] = useState('All');
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [genres, setGenres] = useState<string[]>([
-    'All',
-    'Comedy',
-    'Horror',
-    'Thriller',
-    'Sci-Fi',
-    'Romance',
-  ]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-  const [sliderMovies, setSliderMovies] = useState<Movie[]>([]);
-  const [sliderLoading, setSliderLoading] = useState<boolean>(true);
-  const [sliderError, setSliderError] = useState<string | null>(null);
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+  const [isContentVisible, setIsContentVisible] = useState(false);
+  
+  // Movie state from Redux
+  const { 
+    movies, 
+    genres, 
+    loading, 
+    error, 
+    successMessage, 
+    page, 
+    totalPages, 
+    searchQuery, 
+    selectedGenre 
+  } = useSelector((state: RootState) => state.movies);
+  
+  // Slider state from Redux
+  const { sliderMovies, sliderLoading, sliderError } = useSelector((state: RootState) => state.slider);
+  
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  
   const userRole = localStorage.getItem('role');
-  const email = localStorage.getItem('email') || 'user@example.com';
-  const displayName = (() => {
-    const alphabets = email.match(/[a-zA-Z]/g) || [];
-    const firstFour = alphabets.slice(0, 4).join('');
-    return firstFour ? firstFour.charAt(0).toUpperCase() + firstFour.slice(1) : 'User';
-  })();
-
-  const fetchMovies = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      setSuccessMessage(null);
-
-      const filters: { page?: number; title?: string; genre?: string } = { page };
-      if (debouncedSearchQuery) filters.title = debouncedSearchQuery;
-      if (selectedGenre !== 'All') filters.genre = selectedGenre;
-
-      const response = await getMovies(filters);
-
-      console.log('API response:', response);
-
-      if (!response || !response.movies) {
-        throw new Error('Invalid API response');
-      }
-
-      setMovies(response.movies);
-      setTotalPages(response.meta?.total_pages || 1);
-
-      const fetchedGenres = Array.from(new Set(response.movies.map((movie: Movie) => movie.genre)));
-      const uniqueGenres = [
-        'All',
-        ...new Set([...genres.filter(g => g !== 'All'), ...fetchedGenres]),
-      ] as string[];
-      setGenres(uniqueGenres);
-
-    } catch (err: any) {
-      console.error('Error fetching movies:', err);
-      setError(err.message || 'Failed to load movies. Please try again later.');
-      setMovies([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [debouncedSearchQuery, selectedGenre, page]);
+  // const email = localStorage.getItem('email') || 'user@example.com';
+  // const displayName = (() => {
+  //   const alphabets = email.match(/[a-zA-Z]/g) || [];
+  //   const firstFour = alphabets.slice(0, 4).join('');
+  //   return firstFour ? firstFour.charAt(0).toUpperCase() + firstFour.slice(1) : 'User';
+  // })();
 
   useEffect(() => {
-    const fetchSliderMovies = async () => {
-      try {
-        setSliderLoading(true);
+    dispatch(fetchSliderMovies());
+  }, [dispatch]);
 
-        const response = await getMovies();
+  useEffect(() => {
+    dispatch(fetchMovies({ page, searchQuery: debouncedSearchQuery, genre: selectedGenre }));
+  }, [dispatch, page, debouncedSearchQuery, selectedGenre]);
 
-        if (!response || !response.movies) {
-          throw new Error('Invalid API response for slider');
-        }
-
-        setSliderMovies(response.movies.slice(0, 3));
-      } catch (err: any) {
-        console.error('Error fetching slider movies:', err);
-        setSliderError('Failed to load slider content. Please try again.');
-        setSliderMovies([]);
-      } finally {
-        setSliderLoading(false);
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      console.log('ScrollY:', currentScrollY, 'isContentVisible:', isContentVisible); // Debug log
+      if (currentScrollY > 50) {
+        setIsContentVisible(true);
+      } else {
+        setIsContentVisible(false);
       }
     };
 
-    fetchSliderMovies();
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  useEffect(() => {
-    fetchMovies();
-  }, [fetchMovies]);
-
-  useEffect(() => {
-    fetchMovies();
-  }, [debouncedSearchQuery]);
 
   const openMovieDetail = (movie: Movie) => {
     setSelectedMovie(movie);
@@ -137,49 +84,27 @@ const Dashboard: React.FC = () => {
 
   const handleDeleteMovie = async (movieId: number) => {
     try {
-      setError(null);
-      setSuccessMessage(null);
-      const response = await deleteMovie(movieId);
-      setSuccessMessage(response.message || 'Movie deleted successfully');
-      await fetchMovies();
+      await deleteMovie(movieId);
+      dispatch(fetchMovies({ page, searchQuery: debouncedSearchQuery, genre: selectedGenre }));
     } catch (err: any) {
       console.error('Delete movie error:', err);
-      if (err.response?.status === 404) {
-        setError(`Movie with ID ${movieId} not found. It may have already been deleted.`);
-      } else {
-        setError(err.message || 'Failed to delete movie. Please try again.');
-      }
     }
   };
 
   const handleLogout = async () => {
     try {
       await logoutUser();
-      localStorage.removeItem('authData');
-      localStorage.removeItem('role');
-      localStorage.removeItem('email');
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      localStorage.removeItem('loginResponse');
+      localStorage.clear();
       navigate('/login');
     } catch (err: any) {
       console.error('Logout error:', err.message);
-      setError('Failed to log out. Please try again.');
     }
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
   };
 
   return (
     <div className="min-h-screen bg-white text-gray-900 font-sans">
       <style>
         {`
-          .swiper-button-prev,
-          .swiper-button-next {
-            z-index: 5 !important;
-          }
           .dropdown-menu {
             transition: opacity 0.3s ease, visibility 0.3s ease;
             transition-delay: 0.2s;
@@ -190,10 +115,102 @@ const Dashboard: React.FC = () => {
             opacity: 1;
             visibility: visible;
           }
+          /* Animation for banner text */
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .banner-text {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          .swiper-slide-active .banner-text {
+            animation: fadeInUp 0.6s ease-out forwards;
+          }
+          .banner-text.title {
+            animation-delay: 0.2s;
+          }
+          .banner-text.description {
+            animation-delay: 0.4s;
+          }
+          /* Full-screen banner */
+          .swiper-container {
+            position: relative;
+            min-height: 284px;
+            height: 100vh;
+            transition: height 0.5s ease;
+            z-index: 10;
+          }
+          .swiper-container.shrunk {
+            height: 284px !important;
+          }
+          .swiper-container .swiper {
+            height: 100% !important;
+          }
+          .swiper-container .swiper-slide img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+          }
+          /* Content animation */
+          @keyframes contentFadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(50px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          @keyframes contentFadeInUpFast {
+            from {
+              opacity: 0;
+              transform: translateY(50px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .content-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+          }
+          .content-visible {
+            opacity: 1;
+            visibility: visible;
+            animation: contentFadeInUp 1.2s ease-out forwards;
+          }
+          .content-visible nav {
+            animation-delay: 0.2s;
+          }
+          .content-visible main {
+            animation-delay: 0.3s;
+          }
+          .content-visible footer {
+            animation-delay: 0.4s;
+          }
+          .content-visible .movie-list-container {
+            animation: contentFadeInUpFast 1s ease-out forwards;
+            animation-delay: 0.1s;
+          }
+          /* Apply animation to individual movie cards if they exist */
+          .content-visible .movie-card {
+            animation: contentFadeInUpFast 1s ease-out forwards;
+            animation-delay: 0.1s;
+          }
         `}
       </style>
 
-      <nav className="fixed w-full top-0 z-50 bg-white shadow-lg border-b border-gray-200 p-4 flex items-center justify-between">
+      <nav className={`fixed w-full top-0 z-50 bg-white shadow-lg border-b border-gray-200 p-4 flex items-center justify-between ${isContentVisible ? 'content-visible' : 'content-hidden'}`}>
         <div className="flex items-center space-x-4">
           <span className="text-3xl font-extrabold text-blue-600">Movie+</span>
         </div>
@@ -211,48 +228,26 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="hidden md:flex items-center space-x-6">
             {userRole === 'supervisor' && (
-              <Link
-                to="/admin"
-                className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
-              >
+              <Link to="/admin" className="text-sm font-medium text-gray-700 hover:text-blue-600">
                 Add Movie
               </Link>
             )}
             {userRole === 'user' && (
-              <Link
-                to="/pricing"
-                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              >
+              <Link to="/pricing" className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg">
                 Subscribe
               </Link>
             )}
             <div className="relative group">
               <div className="flex items-center space-x-2 cursor-pointer">
-                <svg 
-                  className="w-8 h-8 text-gray-600" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth="2" 
-                    d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
+                <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
               </div>
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg dropdown-menu">
-                <Link
-                  to="/profile"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
+                <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   Profile
                 </Link>
-                <button
-                  onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
+                <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   Logout
                 </button>
               </div>
@@ -261,45 +256,77 @@ const Dashboard: React.FC = () => {
         </div>
       </nav>
 
-      {menuOpen && (
-        <div className="md:hidden bg-white p-4 border-b border-gray-200 shadow-lg">
-          <div className="flex flex-col space-y-2">
+      {menuOpen && isContentVisible && (
+        <div className="md:hidden fixed top-16 left-0 right-0 bg-white p-4 border-b border-gray-200 shadow-lg z-40 content-visible">
+          <div className="flex flex-col space-y-4">
             {userRole === 'supervisor' && (
-              <Link
-                to="/admin"
-                className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
-                onClick={() => setMenuOpen(false)}
-              >
+              <Link to="/admin" className="text-sm font-medium text-gray-700 hover:text-blue-600" onClick={() => setMenuOpen(false)}>
                 Add Movie
               </Link>
             )}
             {userRole === 'user' && (
-              <Link
-                to="/pricing"
-                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 text-center"
-                onClick={() => setMenuOpen(false)}
-              >
-                Subscribe
+              <Link to="/pricing" className="text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 rounded-lg" onClick={() => setMenuOpen(false)}>
+                Subscribe Now
               </Link>
             )}
-            <Link
-              to="/profile"
-              className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
-              onClick={() => setMenuOpen(false)}
-            >
+            <Link to="/profile" className="text-sm font-medium text-gray-700 hover:text-blue-600" onClick={() => setMenuOpen(false)}>
               Profile
             </Link>
-            <button
-              onClick={handleLogout}
-              className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200 text-left"
-            >
+            <button onClick={handleLogout} className="text-sm font-medium text-gray-700 hover:text-blue-600 text-left">
               Logout
             </button>
           </div>
         </div>
       )}
 
-      <main className="pt-20 p-6 bg-gray-50">
+      <div className={`swiper-container ${isContentVisible ? 'shrunk' : ''}`}>
+        <Swiper
+          modules={[Pagination, Autoplay]}
+          spaceBetween={30}
+          slidesPerView={1}
+          pagination={{ clickable: true }}
+          autoplay={{ delay: 3000, disableOnInteraction: false, pauseOnMouseEnter: true }}
+          className="rounded-lg shadow-lg"
+        >
+          {sliderLoading ? (
+            <SwiperSlide>
+              <div className="flex items-center justify-center h-full">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+              </div>
+            </SwiperSlide>
+          ) : sliderError ? (
+            <SwiperSlide>
+              <div className="text-red-500 text-center h-full flex items-center justify-center">
+                {sliderError}
+              </div>
+            </SwiperSlide>
+          ) : sliderMovies.length === 0 ? (
+            <SwiperSlide>
+              <div className="text-gray-700 text-center h-full flex items-center justify-center">
+                No movies available for the slider.
+              </div>
+            </SwiperSlide>
+          ) : (
+            sliderMovies.map((movie) => (
+              <SwiperSlide key={movie.id}>
+                <div className="relative h-full">
+                  <img
+                    src={movie.banner_url || 'https://via.placeholder.com/1200x400?text=No+Banner'}
+                    alt={movie.title}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                  <div className="absolute top-1/2 left-6 transform -translate-y-1/2 text-white">
+                    <h1 className="text-4xl font-bold banner-text title">{movie.title}</h1>
+                    <p className="text-lg mt-2 banner-text description">{movie.description.slice(0, 100)}...</p>
+                  </div>
+                </div>
+              </SwiperSlide>
+            ))
+          )}
+        </Swiper>
+      </div>
+
+      <main className={`pt-20 p-6 bg-gray-50 ${isContentVisible ? 'content-visible' : 'content-hidden'}`}>
         {successMessage && (
           <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">
             {successMessage}
@@ -311,66 +338,18 @@ const Dashboard: React.FC = () => {
           </div>
         )}
 
-        <div className="mb-8">
-          <Swiper
-            modules={[Navigation, Pagination, Autoplay]}
-            spaceBetween={30}
-            slidesPerView={1}
-            navigation
-            pagination={{ clickable: true }}
-            autoplay={{ delay: 3000, disableOnInteraction: false }}
-            className="rounded-lg shadow-lg"
-          >
-            {sliderLoading ? (
-              <SwiperSlide>
-                <div className="flex items-center justify-center h-96">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-                </div>
-              </SwiperSlide>
-            ) : sliderError ? (
-              <SwiperSlide>
-                <div className="text-red-500 text-center h-96 flex items-center justify-center">
-                  {sliderError}
-                </div>
-              </SwiperSlide>
-            ) : sliderMovies.length === 0 ? (
-              <SwiperSlide>
-                <div className="text-gray-700 text-center h-96 flex items-center justify-center">
-                  No movies available for the slider.
-                </div>
-              </SwiperSlide>
-            ) : (
-              sliderMovies.map((movie) => (
-                <SwiperSlide key={movie.id}>
-                  <div className="relative">
-                    <img
-                      src={movie.banner_url || 'https://via.placeholder.com/1200x400?text=No+Banner'}
-                      alt={movie.title}
-                      className="w-full h-96 object-cover rounded-lg"
-                    />
-                    <div className="absolute top-1/2 left-6 transform -translate-y-1/2 text   text-white">
-                      <h1 className="text-4xl font-bold">{movie.title}</h1>
-                      <p className="text-lg mt-2">{movie.description.slice(0, 100)}...</p>
-                    </div>
-                  </div>
-                </SwiperSlide>
-              ))
-            )}
-          </Swiper>
-        </div>
-
         <div className="mb-6 flex flex-col md:flex-row md:items-center md:space-x-4 space-y-4 md:space-y-0">
           <input
             type="text"
             placeholder="Search by title..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+            onChange={(e) => dispatch(setSearchQuery(e.target.value))}
+            className="px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <select
             value={selectedGenre}
-            onChange={(e) => setSelectedGenre(e.target.value)}
-            className="px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+            onChange={(e) => dispatch(setSelectedGenre(e.target.value))}
+            className="px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {genres.map((genre) => (
               <option key={genre} value={genre} className="text-gray-900">
@@ -390,16 +369,22 @@ const Dashboard: React.FC = () => {
               {error}
             </div>
           ) : (
-            <MovieList movies={movies} onMovieClick={openMovieDetail} onDeleteMovie={userRole === 'supervisor' ? handleDeleteMovie : undefined} />
+            <div className={`movie-list-container ${isContentVisible ? 'content-visible' : 'content-hidden'}`}>
+              <MovieList 
+                movies={movies} 
+                onMovieClick={openMovieDetail} 
+                onDeleteMovie={userRole === 'supervisor' ? handleDeleteMovie : undefined} 
+              />
+            </div>
           )}
         </div>
 
         {totalPages > 1 && (
           <div className="mt-8 flex justify-center space-x-4">
             <button
-              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              onClick={() => dispatch(setPage(Math.max(page - 1, 1)))}
               disabled={page === 1}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg disabled:opacity-50 hover:bg-blue-500 hover:text-white transition-all duration-300"
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg disabled:opacity-50 hover:bg-blue-500 hover:text-white"
             >
               Previous
             </button>
@@ -407,9 +392,9 @@ const Dashboard: React.FC = () => {
               Page {page} of {totalPages}
             </span>
             <button
-              onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+              onClick={() => dispatch(setPage(Math.min(page + 1, totalPages)))}
               disabled={page === totalPages}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg disabled:opacity-50 hover:bg-blue-500 hover:text-white transition-all duration-300"
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg disabled:opacity-50 hover:bg-blue-500 hover:text-white"
             >
               Next
             </button>
@@ -417,13 +402,13 @@ const Dashboard: React.FC = () => {
         )}
       </main>
 
-      <footer className="bg-gray-200 text-gray-600 p-6 text-center border-t border-gray-300">
+      <footer className={`bg-gray-200 text-gray-600 p-6 text-center border-t border-gray-300 ${isContentVisible ? 'content-visible' : 'content-hidden'}`}>
         <p className="text-lg">© {new Date().getFullYear()} Movie+. All rights reserved.</p>
         <div className="mt-4 flex justify-center space-x-6 text-sm">
-          <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors duration-200">Privacy</a>
-          <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors duration-200">Terms</a>
-          <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors duration-200">Help</a>
-          <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors duration-200">Contact</a>
+          <a href="#" className="text-gray-600 hover:text-blue-600">Privacy</a>
+          <a href="#" className="text-gray-600 hover:text-blue-600">Terms</a>
+          <a href="#" className="text-gray-600 hover:text-blue-600">Help</a>
+          <a href="#" className="text-gray-600 hover:text-blue-600">Contact</a>
         </div>
       </footer>
     </div>
@@ -431,3 +416,4 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
+// working

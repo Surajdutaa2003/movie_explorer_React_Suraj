@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import AdminPanel from '../AdminPanel';
-import { createMovie, updateMovie } from '../Api';
+import AdminPanel from '../component/AdminPanel';
+import { createMovie, updateMovie } from '../services/Api';
 
 // Mock dependencies
 jest.mock('react-router-dom', () => ({
@@ -10,7 +10,7 @@ jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn(),
 }));
 
-jest.mock('../Api', () => ({
+jest.mock('../services/Api', () => ({
   createMovie: jest.fn(),
   updateMovie: jest.fn(),
 }));
@@ -181,7 +181,7 @@ describe('AdminPanel Component', () => {
         genre: 'Drama',
         release_year: 2020,
       }));
-      expect(mockNavigate).toHaveBeenCalledWith('/home');
+      expect(mockNavigate).toHaveBeenCalledWith('/');
     });
   });
 
@@ -189,7 +189,7 @@ describe('AdminPanel Component', () => {
     render(<AdminPanel />);
     const goBackButton = screen.getByRole('button', { name: /Go Back Home/i });
     fireEvent.click(goBackButton);
-    expect(mockNavigate).toHaveBeenCalledWith('/home');
+    expect(mockNavigate).toHaveBeenCalledWith('/');
   });
 
   test('handles file input changes', () => {

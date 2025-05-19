@@ -1,7 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode, useEffect } from 'react';
 import MovieCard from './MovieCard';
 import useSwiper from '../hooks/useSwiper';
-import { Movie } from '../Api';
+import { Movie } from '../services/Api';
 
 interface MovieListProps {
   movies: Movie[];
@@ -53,7 +53,7 @@ const MovieList: React.FC<MovieListProps> = ({ movies, onMovieClick, onDeleteMov
   }, []);
 
   // Filter movies with rating >= 8.5 for All Time Favorites
-  const allTimeFavorites = movies.filter((movie) => Number(movie.rating) >= 8.5);
+  const allTimeFavorites = movies.filter((movie) => Number(movie.rating) >= 8.0);
 
   // Trending movies with rating > 7
   const trendingMovies = movies.filter((movie) => Number(movie.rating) > 7);

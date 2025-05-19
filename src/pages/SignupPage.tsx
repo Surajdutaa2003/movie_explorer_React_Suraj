@@ -9,7 +9,7 @@ import {
   Divider,
 } from '@mui/material';
 import { MdEmail, MdLock, MdPerson, MdPhone } from 'react-icons/md';
-import { signupUser } from '../Api'; // Using the signupUser function from Vishal API
+import { signupUser } from '../services/Api'; // Using the signupUser function from Vishal API
 import { FaApple } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import throttle from 'lodash/throttle';

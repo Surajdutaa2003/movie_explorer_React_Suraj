@@ -1,0 +1,598 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for src/component/MovieList.tsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/component</a> MovieList.tsx</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>0/30</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/9</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/13</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>0/28</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { Component, ErrorInfo, ReactNode, useEffect } from 'react';</span>
+<span class="cstat-no" title="statement not covered" >import MovieCard from './MovieCard';</span>
+<span class="cstat-no" title="statement not covered" >import useSwiper from '../hooks/useSwiper';</span>
+import { Movie } from '../services/Api';
+&nbsp;
+interface MovieListProps {
+  movies: Movie[];
+  onMovieClick: (movie: Movie) =&gt; void;
+  onDeleteMovie?: (movieId: number) =&gt; Promise&lt;void&gt;;
+}
+&nbsp;
+interface ErrorBoundaryProps {
+  children: ReactNode;
+}
+&nbsp;
+interface ErrorBoundaryState {
+  hasError: boolean;
+  errorMessage: string;
+}
+&nbsp;
+class ErrorBoundary extends Component&lt;ErrorBoundaryProps, ErrorBoundaryState&gt; {
+  state: ErrorBoundaryState = <span class="cstat-no" title="statement not covered" >{ hasError: false, errorMessage: '' };</span>
+&nbsp;
+<span class="fstat-no" title="function not covered" >  static </span>getDerivedStateFromError(error: Error): ErrorBoundaryState {
+<span class="cstat-no" title="statement not covered" >    return { hasError: true, errorMessage: error.message };</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  componentDidMount(</span>): void {
+<span class="cstat-no" title="statement not covered" >    console.log("component mounted");</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  componentDidCatch(</span>error: Error, errorInfo: ErrorInfo) {
+<span class="cstat-no" title="statement not covered" >    console.error('Error caught in ErrorBoundary:', error, errorInfo);</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  render(</span>) {
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.state.hasError) {</span>
+<span class="cstat-no" title="statement not covered" >      return (</span>
+        &lt;div className="text-red-500 text-center p-4 bg-red-50 rounded-lg"&gt;
+          &lt;h3&gt;Error: {this.state.errorMessage}&lt;/h3&gt;
+          &lt;p&gt;Please try refreshing the page or contact support.&lt;/p&gt;
+        &lt;/div&gt;
+      );
+    }
+<span class="cstat-no" title="statement not covered" >    return this.props.children;</span>
+  }
+}
+&nbsp;
+const MovieList: React.FC&lt;MovieListProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> movies, onMovieClick, onDeleteMovie }) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    console.log("mounted");</span>
+<span class="cstat-no" title="statement not covered" >    console.log("movie list", movies);</span>
+  }, []);
+&nbsp;
+  // Filter movies with rating &gt;= 8.5 for All Time Favorites
+  const allTimeFavorites = <span class="cstat-no" title="statement not covered" >movies.filter(<span class="fstat-no" title="function not covered" >(m</span>ovie) =&gt; <span class="cstat-no" title="statement not covered" >Number(movie.rating) &gt;= 8.5)</span>;</span>
+&nbsp;
+  // Trending movies with rating &gt; 7
+  const trendingMovies = <span class="cstat-no" title="statement not covered" >movies.filter(<span class="fstat-no" title="function not covered" >(m</span>ovie) =&gt; <span class="cstat-no" title="statement not covered" >Number(movie.rating) &gt; 7)</span>;</span>
+&nbsp;
+  const topActors = <span class="cstat-no" title="statement not covered" >[</span>
+    { name: 'Leonardo DiCaprio', image: 'https://cdn.britannica.com/65/227665-050-D74A477E/American-actor-Leonardo-DiCaprio-2016.jpg?w=400&amp;h=300&amp;c=crop' },
+    { name: 'Emma Watson', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfY-AEO2Xb5_NydkrBuT0D6S-5cSvVtYfZ-Jh04P3KOs6D-qi4u3a4EimQ1d3YIuJJG6fLURaWS7HFyk749I0Uk8_xbSHOys3V9EMxtQ' },
+    { name: 'Tom Holland', image: 'data:image/webp;base64,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' },
+    { name: 'Robert Downey Jr.', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSM2x2eeYUrh06Zi32o3cgRhImhmxchWRKMj6snwepLPHo1l-27kOo7ry1gbe_WaOKnKEY&amp;usqp=CAU' },
+    { name: 'Scarlett Johansson', image: 'https://ichef.bbci.co.uk/ace/standard/976/cpsprodpb/4a6d/live/826aa090-160c-11f0-8a1e-3ff815141b98.jpg' },
+    { name: 'Tom Hardy', image: 'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQY2H53gvNDgr7L7P9IX9SE8pcM9FHlfDzBkfEQ4eiDJMosP8ReLCO-0VvSEDhXX0LtH4at6Oly4bZ9_gOkcL7PgQ' },
+    { name: 'Zendaya', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtki5-7izlBYgPUu4aHC3FGNFC10Xr4gwxtvGKcT7j_5pOSAbu4wqUYsoHz2OnVCc5Qwk&amp;usqp=CAU' },
+    { name: 'Robert Pattinson', image: 'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQb5FIceUA04UrDpy6simwQKCAyVMEwJhj9KMHt2KhfYuleRrdLOHd95KudjVK27Rli3qfyMxRA9HZHMPXnC_mwhY1a71C4VLdtwyUwxg' },
+  ];
+&nbsp;
+  // All Movies Swiper
+  const { SwiperComponent: AllMoviesSwiper } = <span class="cstat-no" title="statement not covered" >useSwiper({</span>
+    items: movies,
+    renderSlide: <span class="fstat-no" title="function not covered" >(m</span>ovie: Movie) =&gt; (
+<span class="cstat-no" title="statement not covered" >      &lt;ErrorBoundary&gt;</span>
+        &lt;MovieCard
+          movie={movie}
+          onMovieClick={onMovieClick}
+          onDeleteMovie={onDeleteMovie}
+        /&gt;
+      &lt;/ErrorBoundary&gt;
+    ),
+    navigationPrefix: 'all',
+  });
+&nbsp;
+  // Trending Now Swiper
+  const { SwiperComponent: TrendingSwiper } = <span class="cstat-no" title="statement not covered" >useSwiper({</span>
+    items: trendingMovies,
+    renderSlide: <span class="fstat-no" title="function not covered" >(m</span>ovie: Movie) =&gt; (
+<span class="cstat-no" title="statement not covered" >      &lt;ErrorBoundary&gt;</span>
+        &lt;MovieCard
+          movie={movie}
+          onMovieClick={onMovieClick}
+          onDeleteMovie={onDeleteMovie}
+        /&gt;
+      &lt;/ErrorBoundary&gt;
+    ),
+    navigationPrefix: 'trending',
+  });
+&nbsp;
+  // All Time Favorites Swiper
+  const { SwiperComponent: TopSwiper } = <span class="cstat-no" title="statement not covered" >useSwiper({</span>
+    items: allTimeFavorites,
+    renderSlide: <span class="fstat-no" title="function not covered" >(m</span>ovie: Movie) =&gt; (
+<span class="cstat-no" title="statement not covered" >      &lt;ErrorBoundary&gt;</span>
+        &lt;MovieCard
+          movie={movie}
+          onMovieClick={onMovieClick}
+          onDeleteMovie={onDeleteMovie}
+        /&gt;
+      &lt;/ErrorBoundary&gt;
+    ),
+    navigationPrefix: 'top',
+  });
+&nbsp;
+  // Top Actors Swiper
+  const { SwiperComponent: ActorsSwiper } = <span class="cstat-no" title="statement not covered" >useSwiper({</span>
+    items: topActors,
+    renderSlide: <span class="fstat-no" title="function not covered" >(a</span>ctor: { name: string; image: string }) =&gt; (
+<span class="cstat-no" title="statement not covered" >      &lt;div className="flex flex-col items-center space-y-2"&gt;</span>
+        &lt;img
+          src={actor.image}
+          alt={actor.name}
+          className="w-60 h-60 rounded-full object-cover shadow-md"
+          onError={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; {
+<span class="cstat-no" title="statement not covered" >            e.currentTarget.src = 'https://via.placeholder.com/150?text=No+Image';</span>
+          }}
+        /&gt;
+        &lt;p className="text-base font-medium text-gray-700 text-center"&gt;{actor.name}&lt;/p&gt;
+      &lt;/div&gt;
+    ),
+    slidesPerView: 2,
+    spaceBetween: 20,
+    autoplayDelay: 2500,
+    breakpoints: {
+      640: { slidesPerView: 3 },
+      1024: { slidesPerView: 5 },
+    },
+    navigationPrefix: 'actors',
+  });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    &lt;div className="space-y-12 px-4"&gt;
+      {/* All Movies */}
+      &lt;section&gt;
+        &lt;h2 className="text-xl font-semibold mb-4 text-gray-800"&gt;All Movies&lt;/h2&gt;
+        {movies.length &gt; 0 ? &lt;AllMoviesSwiper /&gt; : &lt;p className="text-gray-500"&gt;No movies available.&lt;/p&gt;}
+      &lt;/section&gt;
+&nbsp;
+      {/* Trending Now */}
+      &lt;section&gt;
+        &lt;h2 className="text-xl font-semibold mb-4 text-gray-800"&gt;Trending Now&lt;/h2&gt;
+        {trendingMovies.length &gt; 0 ? &lt;TrendingSwiper /&gt; : &lt;p className="text-gray-500"&gt;No trending movies available.&lt;/p&gt;}
+      &lt;/section&gt;
+&nbsp;
+      {/* All Time Favorites */}
+      &lt;section&gt;
+        &lt;h2 className="text-xl font-semibold mb-4 text-gray-800"&gt;All Time Favorites&lt;/h2&gt;
+        {allTimeFavorites.length &gt; 0 ? &lt;TopSwiper /&gt; : &lt;p className="text-gray-500"&gt;No movies with rating 8.5 or higher available.&lt;/p&gt;}
+      &lt;/section&gt;
+&nbsp;
+      {/* Top Actors */}
+      &lt;section&gt;
+        &lt;h2 className="text-xl font-semibold mb-4 text-gray-800"&gt;Top Actors&lt;/h2&gt;
+        {topActors.length &gt; 0 ? &lt;ActorsSwiper /&gt; : &lt;p className="text-gray-500"&gt;No actors available.&lt;/p&gt;}
+      &lt;/section&gt;
+    &lt;/div&gt;
+  );
+};
+&nbsp;
+<span class="cstat-no" title="statement not covered" >export default MovieList;</span></pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2025-05-16T07:08:09.917Z
+            </div>
+        <script src="../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../sorter.js"></script>
+        <script src="../../block-navigation.js"></script>
+    </body>
+</html>
+    

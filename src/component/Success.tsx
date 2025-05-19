@@ -185,7 +185,6 @@
 
 
 
-
 import React, { useEffect, useState } from 'react';
 import {
   Box,
@@ -196,7 +195,7 @@ import {
   Button,
 } from '@mui/material';
 import { CheckCircle } from '@mui/icons-material';
-import { getSubscriptionStatus } from '../subApi';
+import { getSubscriptionStatus } from '../services/subApi';
 
 const Success = () => {
   const [loading, setLoading] = useState(true);
@@ -223,7 +222,7 @@ const Success = () => {
   return (
     <Box
       sx={{
-        bgcolor: 'rgb(20, 20, 30)',
+        bgcolor: '#f5f5f5',
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
@@ -245,10 +244,10 @@ const Success = () => {
             sx={{
               p: 4,
               textAlign: 'center',
-              bgcolor: 'rgba(20, 20, 20, 0.9)',
-              color: '#fff',
+              bgcolor: '#ffffff',
+              color: '#333',
               borderRadius: 3,
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              border: '1px solid #ddd',
             }}
           >
             {loading ? (
@@ -259,7 +258,7 @@ const Success = () => {
                   alignItems: 'center',
                 }}
               >
-                <CircularProgress size={40} color="inherit" sx={{ mb: 2 }} />
+                <CircularProgress size={40} color="primary" sx={{ mb: 2 }} />
                 <Typography variant="h6">
                   Verifying your subscription...
                 </Typography>
@@ -307,7 +306,7 @@ const Success = () => {
                 </Typography>
                 <Typography
                   variant="body1"
-                  color="rgba(255,255,255,0.7)"
+                  color="text.secondary"
                   gutterBottom
                   sx={{ mb: 3 }}
                 >
@@ -320,7 +319,7 @@ const Success = () => {
                   color="primary"
                   size="large"
                   fullWidth
-                  onClick={() => (window.location.href = '/home')}
+                  onClick={() => (window.location.href = '/')}
                   sx={{
                     bgcolor: '#E50914',
                     '&:hover': { bgcolor: '#c7000d' },
@@ -338,4 +337,3 @@ const Success = () => {
 };
 
 export default Success;
-// ss

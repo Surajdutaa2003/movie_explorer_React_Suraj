@@ -169,7 +169,18 @@
 <a name='L104'></a><a href='#L104'>104</a>
 <a name='L105'></a><a href='#L105'>105</a>
 <a name='L106'></a><a href='#L106'>106</a>
-<a name='L107'></a><a href='#L107'>107</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -186,7 +197,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -196,13 +206,25 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -277,11 +299,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { initializeApp } from "firebase/app";</span>
 <span class="cstat-no" title="statement not covered" >import { deleteToken, getMessaging, getToken, o</span>nMessage } from "firebase/messaging";
-<span class="cstat-no" title="statement not covered" >import { sendTokenToBackend } from "../Api";</span>
+<span class="cstat-no" title="statement not covered" >import { sendTokenToBackend } from "../services/Api";</span>
 &nbsp;
 &nbsp;
 // ...existing code...
-const sendDeviceToken = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(token: string | null) =&gt; {</span>
+const sendDeviceTokenToBackend = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(token: string | null) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!token || typeof token !== "string" || token.length &lt; 50) {</span>
 <span class="cstat-no" title="statement not covered" >      throw new Error('Invalid token format');</span>
@@ -292,14 +314,24 @@ const sendDeviceToken = <span class="cstat-no" title="statement not covered" ><s
 <span class="cstat-no" title="statement not covered" >    console.error('Error sending device token:', error);</span>
   }
 };
+// const firebaseConfig = {
+//     apiKey: "AIzaSyCKt2wYuYzr0uKWe8o5jUE6p9wb-3lSK68",
+//     authDomain: "movie-explorer-5bc8a.firebaseapp.com",
+//     projectId: "movie-explorer-5bc8a",
+//     storageBucket: "movie-explorer-5bc8a.firebasestorage.app",
+//     messagingSenderId: "561268525206",
+//     appId: "1:561268525206:web:9ba893c094bf72aed81ab7",
+//     measurementId: "G-XPP4G1SXPV"
+// };
+&nbsp;
 const firebaseConfig = <span class="cstat-no" title="statement not covered" >{</span>
-    apiKey: "AIzaSyCKt2wYuYzr0uKWe8o5jUE6p9wb-3lSK68",
-    authDomain: "movie-explorer-5bc8a.firebaseapp.com",
-    projectId: "movie-explorer-5bc8a",
-    storageBucket: "movie-explorer-5bc8a.firebasestorage.app",
-    messagingSenderId: "561268525206",
-    appId: "1:561268525206:web:9ba893c094bf72aed81ab7",
-    measurementId: "G-XPP4G1SXPV"
+  apiKey: "AIzaSyCn_PDsUKRavjNluvdIkGJn40ZUcMoJ2-E",
+  authDomain: "movieexplorerplus-a09f0.firebaseapp.com",
+  projectId: "movieexplorerplus-a09f0",
+  storageBucket: "movieexplorerplus-a09f0.firebasestorage.app",
+  messagingSenderId: "482058570774",
+  appId: "1:482058570774:web:43d32a12c0c31ebb08f937",
+  measurementId: "G-T7N8YDJVC5"
 };
 &nbsp;
 const app = <span class="cstat-no" title="statement not covered" >initializeApp(firebaseConfig);</span>
@@ -309,7 +341,8 @@ export const <span class="cstat-no" title="statement not covered" >generateToken
 <span class="cstat-no" title="statement not covered" >  try {</span>
     // Check if permission is already granted
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (Notification.permission === "granted") {</span>
-      const vapidKey = <span class="cstat-no" title="statement not covered" >"BB-kLe4vRvnBrHpgtnGuaVLdXTLRKbxJMmX3Ja7Tw92tW9NDKoGzQW1WXZDOII2ObL_bjPzBQvLOL9L6PnkbYxw";</span>
+      // const vapidKey = "BB-kLe4vRvnBrHpgtnGuaVLdXTLRKbxJMmX3Ja7Tw92tW9NDKoGzQW1WXZDOII2ObL_bjPzBQvLOL9L6PnkbYxw";
+      const vapidKey = <span class="cstat-no" title="statement not covered" >"BIr3lBH6e_kZaabd6ckdWCWzpvHjXh_gFWV6MEzr3TjL1CWKVIzd-Pih9pbH5wD5I43b7kQITOxYScXY7ACo0D8"</span>
       const token = <span class="cstat-no" title="statement not covered" >await getToken(messaging, { vapidKey }).catch(<span class="fstat-no" title="function not covered" >async </span>(error) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (error.code === "messaging/token-unsubscribed" || error.code === "messaging/invalid-token") {</span>
 <span class="cstat-no" title="statement not covered" >          console.log("Existing token invalid or unsubscribed, generating new token");</span>
@@ -337,7 +370,7 @@ export const <span class="cstat-no" title="statement not covered" >generateToken
     }
 &nbsp;
     // Generate new token
-    const vapidKey = <span class="cstat-no" title="statement not covered" >"BB-kLe4vRvnBrHpgtnGuaVLdXTLRKbxJMmX3Ja7Tw92tW9NDKoGzQW1WXZDOII2ObL_bjPzBQvLOL9L6PnkbYxw";</span>
+    const vapidKey = <span class="cstat-no" title="statement not covered" >"BIr3lBH6e_kZaabd6ckdWCWzpvHjXh_gFWV6MEzr3TjL1CWKVIzd-Pih9pbH5wD5I43b7kQITOxYScXY7ACo0D8";</span>
     const token = <span class="cstat-no" title="statement not covered" >await getToken(messaging, { vapidKey });</span>
 <span class="cstat-no" title="statement not covered" >    console.log("New FCM Token:", token);</span>
 &nbsp;
@@ -357,7 +390,7 @@ export const <span class="cstat-no" title="statement not covered" >generateToken
 &nbsp;
 export const <span class="cstat-no" title="statement not covered" >monitorToken = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
-    const vapidKey = <span class="cstat-no" title="statement not covered" >"BB-kLe4vRvnBrHpgtnGuaVLdXTLRKbxJMmX3Ja7Tw92tW9NDKoGzQW1WXZDOII2ObL_bjPzBQvLOL9L6PnkbYxw";</span>
+    const vapidKey = <span class="cstat-no" title="statement not covered" >"BIr3lBH6e_kZaabd6ckdWCWzpvHjXh_gFWV6MEzr3TjL1CWKVIzd-Pih9pbH5wD5I43b7kQITOxYScXY7ACo0D8";</span>
     const token = <span class="cstat-no" title="statement not covered" >await getToken(messaging, { vapidKey }).catch(<span class="fstat-no" title="function not covered" >async </span>(error) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (error.code === "messaging/token-unsubscribed" || error.code === "messaging/invalid-token") {</span>
 <span class="cstat-no" title="statement not covered" >        console.log("Token invalid or unsubscribed, generating new token");</span>
@@ -388,7 +421,7 @@ export { <span class="cstat-no" title="statement not covered" ><span class="fsta
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-10T05:05:53.838Z
+                at 2025-05-16T07:08:09.917Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

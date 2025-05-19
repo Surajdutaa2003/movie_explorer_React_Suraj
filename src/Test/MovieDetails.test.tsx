@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import MovieDetail from '../component/MovieDetails';
-import { getMovieById } from '../Api';
+import { getMovieById } from '../services/Api';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';

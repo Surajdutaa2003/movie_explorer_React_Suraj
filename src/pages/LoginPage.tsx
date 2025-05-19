@@ -8,8 +8,9 @@ import {
   Stack,
 } from "@mui/material";
 import { MdEmail, MdLock } from "react-icons/md";
+import { motion } from "framer-motion";
 import LoginLogo from "../assets/loginLogo.png";
-import { loginUser } from "../Api";
+import { loginUser } from "../services/Api";
 import { withNavigate } from "../withNavigate";
 import { NavigateFunction } from "react-router-dom";
 import { throttle } from "lodash";
@@ -37,6 +38,7 @@ interface LoginPageState {
   email: string;
   password: string;
   error: string | null;
+  hoverCount: number;
 }
 
 class LoginPage extends Component<LoginPageProps, LoginPageState> {
@@ -48,6 +50,7 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
       email: "",
       password: "",
       error: null,
+      hoverCount: 0,
     };
 
     this.throttledLogin = throttle(this.handleLogin.bind(this), 2000, {
@@ -57,10 +60,11 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
 
   handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    this.setState({ [name]: value, error: null } as Pick<
-      LoginPageState,
-      keyof LoginPageState
-    >);
+    this.setState((prevState) => ({
+      ...prevState,
+      [name]: value,
+      error: null,
+    }));
   };
 
   handleLogin = async () => {
@@ -120,9 +124,8 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
         },
       });
 
-      // Delay navigation to allow toast to display
       setTimeout(() => {
-        navigate("/home");
+        navigate("/");
       }, 1500);
     } catch (error: any) {
       const errorMessage = error.message || "Login failed. Please check your email and password.";
@@ -135,9 +138,45 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
     }
   };
 
+  handleHover = () => {
+    if (!this.state.email.trim() || !this.state.password.trim()) {
+      this.setState((prevState) => ({
+        hoverCount: prevState.hoverCount + 1,
+      }));
+    }
+  };
+
   render() {
-    const { email, password, error } = this.state;
+    const { email, password, error, hoverCount } = this.state;
     const { navigate } = this.props;
+
+    // Check if all fields are filled
+    const isFormValid = email.trim() !== "" && password.trim() !== "";
+
+    // Animation variants for the button
+    const buttonVariants = {
+      normal: { y: 0 },
+      runAwayTop: {
+        y: -80,
+        transition: {
+          duration: 0.3,
+          ease: "easeInOut",
+        },
+      },
+      runAwayBottom: {
+        y: 80,
+        transition: {
+          duration: 0.3,
+          ease: "easeInOut",
+        },
+      },
+    };
+
+    // Determine animation based on hover count
+    const getAnimationVariant = () => {
+      if (isFormValid) return "normal";
+      return hoverCount % 2 === 1 ? "runAwayTop" : "runAwayBottom";
+    };
 
     return (
       <Box
@@ -179,6 +218,9 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
             border: "1px solid rgba(0, 0, 0, 0.1)",
             boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
             borderRadius: 2,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
           {error && (
@@ -187,7 +229,7 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
             </Typography>
           )}
 
-          <Stack spacing={2}>
+          <Stack spacing={2} sx={{ width: "100%" }}>
             <Box display="flex" alignItems="flex-end">
               <MdEmail size={20} style={{ marginRight: 8, color: "#9e9e9e" }} />
               <TextField
@@ -214,19 +256,31 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
               />
             </Box>
 
-            <Button
-              fullWidth
-              variant="contained"
-              sx={{
-                mt: 1,
-                bgcolor: "#1976d2",
-                "&:hover": { bgcolor: "#115293" },
-                transition: "background-color 0.3s ease-in-out",
-              }}
-              onClick={this.throttledLogin}
+            <motion.div
+              variants={buttonVariants}
+              animate="normal"
+              whileHover={getAnimationVariant()}
+              onHoverStart={this.handleHover}
+              style={{ display: "flex", justifyContent: "center" }}
             >
-              Sign In
-            </Button>
+             <Button
+  variant="contained"
+  sx={{
+    mt: 2,
+    bgcolor: "#1976d2",
+    "&:hover": { bgcolor: "#115293" },
+    transition: "background-color 0.3s ease-in-out",
+    // padding: "10px 20px",         // Increased padding
+    fontSize: "1rem",             // Bigger font
+    width: "80%",                // Make it span full width
+    borderRadius: "8px",          // Optional: smoother button
+  }}
+  onClick={this.throttledLogin}
+>
+  Sign In
+</Button>
+
+            </motion.div>
           </Stack>
 
           <Box mt={2} textAlign="center">

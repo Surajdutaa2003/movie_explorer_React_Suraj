@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import MovieCard from '../MovieCard';
-import { Movie } from '../Api';
+import { Movie } from '../services/Api';
 
 // Mock useNavigate
 const mockNavigate = jest.fn();

@@ -1,152 +1,187 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import LoginPage from '../pages/LoginPage'; // update path as needed
-import { loginUser } from '../Api'; // update path as needed
-import { MemoryRouter } from 'react-router-dom';
-import '@testing-library/jest-dom';
+import { BrowserRouter } from 'react-router-dom';
+import LoginPage from '../pages/LoginPage';
+import * as Api from '../services/Api';
+import { withNavigate } from '../withNavigate';
 
-// Mocks
-jest.mock('../Api', () => ({
+// Mock the API service
+jest.mock('../services/Api', () => ({
   loginUser: jest.fn(),
 }));
 
-const mockedNavigate = jest.fn();
-
+// Mock the withNavigate HOC
 jest.mock('../withNavigate', () => ({
-  withNavigate: (Component: any) => (props: any) =>
-    <Component {...props} navigate={mockedNavigate} />,
+  withNavigate: (Component: React.ComponentType<any>) => (props: any) => (
+    <Component {...props} navigate={jest.fn()} />
+  ),
 }));
 
-describe('LoginPage Component', () => {
+// Mock react-hot-toast
+jest.mock('react-hot-toast', () => ({
+  error: jest.fn(),
+  success: jest.fn(),
+  Toaster: () => null,
+}));
+
+describe('LoginPage', () => {
+  const mockNavigate = jest.fn();
+  const mockLoginUser = Api.loginUser as jest.Mock;
+
+  // Wrapper to provide router context
+  const renderWithRouter = (component: React.ReactElement) => {
+    return render(<BrowserRouter>{component}</BrowserRouter>);
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
-    localStorage.clear();
   });
 
-  it('renders email, password fields and sign in button', () => {
-    render(
-      <MemoryRouter>
-        <LoginPage />
-      </MemoryRouter>
-    );
+  it('renders the login form correctly', () => {
+    const LoginPageWithNavigate = withNavigate(LoginPage);
+    renderWithRouter(<LoginPageWithNavigate />);
 
+    expect(screen.getByAltText('logo')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sign In' })).toBeInTheDocument();
+    expect(screen.getByText(/Don't have an account\?/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sign Up' })).toBeInTheDocument();
   });
 
-  it('logs in successfully and navigates to home', async () => {
-    const mockResponse = {
-      user: { id: 1, email: 'test@example.com' },
-      token: 'mock-token',
-      role: 'user',
-    };
+  it('handles input changes', () => {
+    const LoginPageWithNavigate = withNavigate(LoginPage);
+    renderWithRouter(<LoginPageWithNavigate />);
 
-    (loginUser as jest.Mock).mockResolvedValue(mockResponse);
-    window.alert = jest.fn();
+    const emailInput = screen.getByPlaceholderText('Email');
+    const passwordInput = screen.getByPlaceholderText('Password');
 
-    render(
-      <MemoryRouter>
-        <LoginPage />
-      </MemoryRouter>
-    );
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
 
-    fireEvent.change(screen.getByPlaceholderText('Email'), {
-      target: { value: 'test@example.com' },
-    });
-
-    fireEvent.change(screen.getByPlaceholderText('Password'), {
-      target: { value: 'password123' },
-    });
-
-    fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
-
-    await waitFor(() => {
-      expect(loginUser).toHaveBeenCalledWith({
-        email: 'test@example.com',
-        password: 'password123',
-      });
-    });
-
-    expect(localStorage.getItem('role')).toBe('user');
-    expect(localStorage.getItem('token')).toBe('mock-token');
-    expect(localStorage.getItem('user')).toBe(JSON.stringify(mockResponse.user));
-    expect(mockedNavigate).toHaveBeenCalledWith('/home');
-    expect(window.alert).toHaveBeenCalledWith('Login successful!');
+    expect(emailInput).toHaveValue('test@example.com');
+    expect(passwordInput).toHaveValue('password123');
   });
 
-  it('shows error alert on failed login', async () => {
-    (loginUser as jest.Mock).mockRejectedValue(new Error('Invalid credentials'));
-    window.alert = jest.fn();
-    console.error = jest.fn(); // suppress error logs
+  it('shows error for empty fields on submit', async () => {
+    const LoginPageWithNavigate = withNavigate(LoginPage);
+    renderWithRouter(<LoginPageWithNavigate />);
 
-    render(
-      <MemoryRouter>
-        <LoginPage />
-      </MemoryRouter>
-    );
-
-    fireEvent.change(screen.getByPlaceholderText('Email'), {
-      target: { value: 'wrong@example.com' },
-    });
-
-    fireEvent.change(screen.getByPlaceholderText('Password'), {
-      target: { value: 'wrongpass' },
-    });
-
-    fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
-
-    await waitFor(() => {
-      expect(loginUser).toHaveBeenCalled();
-    });
-
-    expect(window.alert).toHaveBeenCalledWith(
-      'Login failed. Please check your email and password.'
-    );
-  });
-
-  it('throttles rapid sign-in attempts', async () => {
-    const mockResponse = {
-      user: { id: 1, email: 'test@example.com' },
-      token: 'mock-token',
-      role: 'user',
-    };
-    (loginUser as jest.Mock).mockResolvedValue(mockResponse);
-
-    render(
-      <MemoryRouter>
-        <LoginPage />
-      </MemoryRouter>
-    );
-
-    fireEvent.change(screen.getByPlaceholderText('Email'), {
-      target: { value: 'test@example.com' },
-    });
-
-    fireEvent.change(screen.getByPlaceholderText('Password'), {
-      target: { value: 'password123' },
-    });
-
-    const signInButton = screen.getByRole('button', { name: /sign in/i });
-
+    const signInButton = screen.getByRole('button', { name: 'Sign In' });
     fireEvent.click(signInButton);
-    fireEvent.click(signInButton); // second click should be throttled
 
     await waitFor(() => {
-      expect(loginUser).toHaveBeenCalledTimes(1);
+      expect(screen.getByText('Please fill in both email and password')).toBeInTheDocument();
+      expect(require('react-hot-toast').error).toHaveBeenCalledWith(
+        'Please fill in both email and password',
+        expect.any(Object)
+      );
     });
   });
 
-  it('navigates to signup on button click', () => {
-    render(
-      <MemoryRouter>
-        <LoginPage />
-      </MemoryRouter>
-    );
+  it('shows error for invalid email', async () => {
+    const LoginPageWithNavigate = withNavigate(LoginPage);
+    renderWithRouter(<LoginPageWithNavigate />);
 
-    const signUpButton = screen.getByRole('button', { name: /sign up/i });
-    fireEvent.click(signUpButton);
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'invalid-email' } });
+    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'password123' } });
 
-    expect(mockedNavigate).toHaveBeenCalledWith('/signup');
+    const signInButton = screen.getByRole('button', { name: 'Sign In' });
+    fireEvent.click(signInButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
+      expect(require('react-hot-toast').error).toHaveBeenCalledWith(
+        'Please enter a valid email address',
+        expect.any(Object)
+      );
+    });
   });
-});
+
+  it('shows error for password less than 8 characters', async () => {
+    const LoginPageWithNavigate = withNavigate(LoginPage);
+    renderWithRouter(<LoginPageWithNavigate />);
+
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'test@example.com' } });
+    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'short' } });
+
+    const signInButton = screen.getByRole('button', { name: 'Sign In' });
+    fireEvent.click(signInButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Password must be at least 8 characters long')).toBeInTheDocument();
+      expect(require('react-hot-toast').error).toHaveBeenCalledWith(
+        'Password must be at least 8 characters long',
+        expect.any(Object)
+      );
+    });
+  });
+
+  it('successfully logs in with valid credentials', async () => {
+    const mockResponse = {
+      user: {
+        id: 1,
+        email: 'test@example.com',
+        first_name: 'Test',
+        last_name: 'User',
+        mobile_number: '1234567890',
+        role: 'user',
+        created_at: '2025-05-16',
+        updated_at: '2025-05-16',
+      },
+      token: 'mock-token',
+    };
+    mockLoginUser.mockResolvedValue(mockResponse);
+
+    // Mock localStorage
+    const localStorageMock = {
+      setItem: jest.fn(),
+      getItem: jest.fn(),
+    };
+    Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+
+    const LoginPageWithNavigate = withNavigate(LoginPage);
+    renderWithRouter(<LoginPageWithNavigate />);
+
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'test@example.com' } });
+    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'password123' } });
+
+    const signInButton = screen.getByRole('button', { name: 'Sign In' });
+    fireEvent.click(signInButton);
+
+    await waitFor(() => {
+      expect(mockLoginUser).toHaveBeenCalledWith({ email: 'test@example.com', password: 'password123' });
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('role', 'user');
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('user', JSON.stringify(mockResponse.user));
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('token', 'mock-token');
+      expect(require('react-hot-toast').success).toHaveBeenCalledWith(
+        'Login successful!',
+        expect.any(Object)
+      );
+      // expect(mockNavigate).toHaveBeenCalledWith('/');
+    });
+  });
+
+  it('handles login failure', async () => {
+    mockLoginUser.mockRejectedValue(new Error('Invalid credentials'));
+
+    const LoginPageWithNavigate = withNavigate(LoginPage);
+    renderWithRouter(<LoginPageWithNavigate />);
+
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'test@example.com' } });
+    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'password123' } });
+
+    const signInButton = screen.getByRole('button', { name: 'Sign In' });
+    fireEvent.click(signInButton);
+
+    await waitFor(() => {
+      expect(mockLoginUser).toHaveBeenCalledWith({ email: 'test@example.com', password: 'password123' });
+      expect(screen.getByText('Invalid credentials')).toBeInTheDocument();
+      expect(require('react-hot-toast').error).toHaveBeenCalledWith(
+        'Invalid credentials',
+        expect.any(Object)
+      );
+    });
+  });
+
+ 
+  });

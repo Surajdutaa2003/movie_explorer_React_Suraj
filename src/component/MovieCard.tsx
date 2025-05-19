@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { Movie } from '../Api';
+import { Movie } from '../services/Api';
 import { useNavigate } from 'react-router-dom';
+import toast, { Toaster } from "react-hot-toast";
 
 interface MovieCardProps {
   movie: Movie;
@@ -43,7 +44,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onDeleteMovie, onMovieClic
 
       if (!token) {
         alert('Please log in to view movie details');
-        navigate('/');
+        // use Settimeout to navigate to./home after 2 seconds
+        navigate('/home');
         return;
       }
 
