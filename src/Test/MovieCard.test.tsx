@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import MovieCard from '../MovieCard';
+import MovieCard from '../component/MovieCard';
 import { Movie } from '../services/Api';
 
 // Mock useNavigate
@@ -19,7 +19,7 @@ const mockMovie: Movie = {
   id: 1,
   title: 'Test Movie',
   genre: 'Action',
-  rating: 8.5,
+  rating: '8.5',
   poster_url: 'http://example.com/poster.jpg',
   release_year: 2023,
   director: 'John Doe',
