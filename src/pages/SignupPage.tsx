@@ -14,6 +14,7 @@ import { FaApple } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import throttle from 'lodash/throttle';
 import LoginLogo from '../assets/loginLogo.png';
+import toast, { Toaster } from 'react-hot-toast';
 
 interface SignupState {
   firstName: string;
@@ -57,54 +58,56 @@ class SignupPage extends Component<{}, SignupState> {
     const { firstName, lastName, email, password, confirmPassword, mobile } = this.state;
 
     if (!firstName || !lastName || !email || !password || !confirmPassword || !mobile) {
-      this.setState({ error: 'Please fill all fields' });
+      toast.error('Please fill all fields');
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      this.setState({ error: 'Please enter a valid email address' });
+      toast.error('Please enter a valid email address');
       return;
     }
 
     if (password.length < 8) {
-      this.setState({ error: 'Password must be at least 8 characters long' });
+      toast.error('Password must be at least 8 characters long');
       return;
     }
 
     if (password !== confirmPassword) {
-      this.setState({ error: 'Passwords do not match' });
+      toast.error('Passwords do not match');
       return;
     }
 
     if (!/^\d{10}$/.test(mobile)) {
-      this.setState({ error: 'Mobile number must be 10 digits' });
+      toast.error('Mobile number must be 10 digits');
       return;
     }
 
     try {
       const signupData = {
-        name: `${firstName} ${lastName}`.trim(), // Combine for API compatibility
+        name: `${firstName} ${lastName}`.trim(),
         email,
         mobile_number: mobile,
         password,
       };
 
-      console.log('Sending signup payload:', signupData); // Debug log
+      const loadingToast = toast.loading('Creating your account...');
 
-      const response = await signupUser(signupData); // Using Vishal API signup function
+      const response = await signupUser(signupData);
 
       if (response.user?.id) {
         localStorage.setItem('token', response.token);
-        alert('Account created successfully!');
-        window.location.href = '/login';
+        toast.success('Account created successfully!', { id: loadingToast });
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 1500);
       } else {
-        this.setState({ error: 'Signup failed. Please try again.' });
+        toast.error('Signup failed. Please try again.', { id: loadingToast });
       }
     } catch (error: any) {
       const errorMessage = error.message || 'An error occurred during signup.';
-      console.error('Signup error details:', error); // Log full error for debugging
-      this.setState({ error: errorMessage });
+      console.error('Signup error details:', error);
+      toast.error(errorMessage);
     }
   };
 
@@ -121,6 +124,7 @@ class SignupPage extends Component<{}, SignupState> {
         px={2}
         bgcolor="#EDEEF0"
       >
+        <Toaster position="top-right" />
         <Box display="flex" flexDirection="column" alignItems="center" mb={5}>
           <Box
             width={300}

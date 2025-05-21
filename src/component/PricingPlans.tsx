@@ -15,14 +15,14 @@ import { Plan } from '../Types';
 const plans: Plan[] = [
   {
     id: 'basic',
-    name: '1 Day Pass',
+    name: '7 Day Pass',
     price: '$9.99',
     features: ['Full access to all movies', 'Unlimited streaming', 'HD quality', 'No ads'],
     duration: '24 hours of premium access',
   },
   {
     id: 'premium',
-    name: '7 Day Pass',
+    name: '1 Month Pass',
     price: '$14.99',
     features: ['Full access to all movies', 'Unlimited streaming', 'HD & 4K quality', 'No ads', 'Offline downloads'],
     duration: '7 days of premium access',
@@ -30,7 +30,7 @@ const plans: Plan[] = [
   },
   {
     id: '1_month',
-    name: '1 Month Premium',
+    name: '1 Year Premium',
     price: '$19.99',
     features: [
       'Full access to all movies',

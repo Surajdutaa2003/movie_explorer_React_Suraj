@@ -7,6 +7,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
+import '../styles/Dashboard.css'; // Import the CSS file
 import useDebounce from '../hooks/useDebounce';
 import { fetchMovies, setPage, setSearchQuery, setSelectedGenre } from '../redux/movieSlice';
 import { fetchSliderMovies } from '../redux/sliderSlice';
@@ -44,12 +45,6 @@ const Dashboard: React.FC = () => {
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   
   const userRole = localStorage.getItem('role');
-  // const email = localStorage.getItem('email') || 'user@example.com';
-  // const displayName = (() => {
-  //   const alphabets = email.match(/[a-zA-Z]/g) || [];
-  //   const firstFour = alphabets.slice(0, 4).join('');
-  //   return firstFour ? firstFour.charAt(0).toUpperCase() + firstFour.slice(1) : 'User';
-  // })();
 
   useEffect(() => {
     dispatch(fetchSliderMovies());
@@ -95,7 +90,7 @@ const Dashboard: React.FC = () => {
     try {
       await logoutUser();
       localStorage.clear();
-      navigate('/login');
+      navigate('/goodbye');
     } catch (err: any) {
       console.error('Logout error:', err.message);
     }
@@ -103,113 +98,6 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white text-gray-900 font-sans">
-      <style>
-        {`
-          .dropdown-menu {
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-            transition-delay: 0.2s;
-            opacity: 0;
-            visibility: hidden;
-          }
-          .group:hover .dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-          }
-          /* Animation for banner text */
-          @keyframes fadeInUp {
-            from {
-              opacity: 0;
-              transform: translateY(20px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-          .banner-text {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          .swiper-slide-active .banner-text {
-            animation: fadeInUp 0.6s ease-out forwards;
-          }
-          .banner-text.title {
-            animation-delay: 0.2s;
-          }
-          .banner-text.description {
-            animation-delay: 0.4s;
-          }
-          /* Full-screen banner */
-          .swiper-container {
-            position: relative;
-            min-height: 284px;
-            height: 100vh;
-            transition: height 0.5s ease;
-            z-index: 10;
-          }
-          .swiper-container.shrunk {
-            height: 284px !important;
-          }
-          .swiper-container .swiper {
-            height: 100% !important;
-          }
-          .swiper-container .swiper-slide img {
-            height: 100%;
-            width: 100%;
-            object-fit: cover;
-          }
-          /* Content animation */
-          @keyframes contentFadeInUp {
-            from {
-              opacity: 0;
-              transform: translateY(50px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-          @keyframes contentFadeInUpFast {
-            from {
-              opacity: 0;
-              transform: translateY(50px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-          .content-hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-          }
-          .content-visible {
-            opacity: 1;
-            visibility: visible;
-            animation: contentFadeInUp 1.2s ease-out forwards;
-          }
-          .content-visible nav {
-            animation-delay: 0.2s;
-          }
-          .content-visible main {
-            animation-delay: 0.3s;
-          }
-          .content-visible footer {
-            animation-delay: 0.4s;
-          }
-          .content-visible .movie-list-container {
-            animation: contentFadeInUpFast 1s ease-out forwards;
-            animation-delay: 0.1s;
-          }
-          /* Apply animation to individual movie cards if they exist */
-          .content-visible .movie-card {
-            animation: contentFadeInUpFast 1s ease-out forwards;
-            animation-delay: 0.1s;
-          }
-        `}
-      </style>
-
       <nav className={`fixed w-full top-0 z-50 bg-white shadow-lg border-b border-gray-200 p-4 flex items-center justify-between ${isContentVisible ? 'content-visible' : 'content-hidden'}`}>
         <div className="flex items-center space-x-4">
           <span className="text-3xl font-extrabold text-blue-600">Movie+</span>
@@ -326,6 +214,8 @@ const Dashboard: React.FC = () => {
         </Swiper>
       </div>
 
+
+
       <main className={`pt-20 p-6 bg-gray-50 ${isContentVisible ? 'content-visible' : 'content-hidden'}`}>
         {successMessage && (
           <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">
@@ -416,4 +306,4 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
-// working
+// ss

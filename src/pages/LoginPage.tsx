@@ -44,6 +44,9 @@ interface LoginPageState {
 class LoginPage extends Component<LoginPageProps, LoginPageState> {
   throttledLogin: () => void;
 
+  // Add this new property
+  hasInteracted: boolean = false;
+
   constructor(props: LoginPageProps) {
     super(props);
     this.state = {
@@ -139,11 +142,20 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
   };
 
   handleHover = () => {
+    if (!this.hasInteracted) {
+      return; // Don't trigger animation if user hasn't interacted
+    }
+    
     if (!this.state.email.trim() || !this.state.password.trim()) {
       this.setState((prevState) => ({
         hoverCount: prevState.hoverCount + 1,
       }));
     }
+  };
+
+  // Add this new method
+  handleFieldInteraction = () => {
+    this.hasInteracted = true;
   };
 
   render() {
@@ -240,6 +252,7 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
                 name="email"
                 value={email}
                 onChange={this.handleChange}
+                onFocus={this.handleFieldInteraction}
               />
             </Box>
 
@@ -253,32 +266,33 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
                 name="password"
                 value={password}
                 onChange={this.handleChange}
+                onFocus={this.handleFieldInteraction}
               />
             </Box>
 
             <motion.div
               variants={buttonVariants}
               animate="normal"
-              whileHover={getAnimationVariant()}
+              whileHover={this.hasInteracted ? getAnimationVariant() : "normal"}
               onHoverStart={this.handleHover}
               style={{ display: "flex", justifyContent: "center" }}
             >
-             <Button
-  variant="contained"
-  sx={{
-    mt: 2,
-    bgcolor: "#1976d2",
-    "&:hover": { bgcolor: "#115293" },
-    transition: "background-color 0.3s ease-in-out",
-    // padding: "10px 20px",         // Increased padding
-    fontSize: "1rem",             // Bigger font
-    width: "80%",                // Make it span full width
-    borderRadius: "8px",          // Optional: smoother button
-  }}
-  onClick={this.throttledLogin}
->
-  Sign In
-</Button>
+              <Button
+                variant="contained"
+                sx={{
+                  mt: 2,
+                  bgcolor: "#1976d2",
+                  "&:hover": { bgcolor: "#115293" },
+                  transition: "background-color 0.3s ease-in-out",
+
+                  fontSize: "1rem",
+                  width: "80%",
+                  borderRadius: "8px",
+                }}
+                onClick={this.throttledLogin}
+              >
+                Sign In
+              </Button>
 
             </motion.div>
           </Stack>

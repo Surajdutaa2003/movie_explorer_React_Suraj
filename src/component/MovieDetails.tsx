@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion, Variants } from 'framer-motion';
 import { getMovieById } from '../services/Api';
 import { Movie } from '../services/Api';
+import '../styles/MovieDetails.css';
 
 interface MovieDetailProps {
   onClose?: () => void;
@@ -116,36 +117,30 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center z-50 p-4 overflow-y-auto"
+      className="movie-detail-backdrop"
       style={{
         backgroundImage: `url(${
           movie?.poster_url ||
           'https://encrypted-tbn0.gstatic.com/shopping?q=tbn9GcQoSOgjBmQN9GUg3GQnTNKJHlyuZjP8ESr8AMgf7fYTu9rOr9G5Ewd9IMMi6nuCu8LNp_I8xIMBrlRbt_AJ8fLyVysNlk93Q0so4nyU5c0Hdw9Pd4Q1bemJ'
         })`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backdropFilter: 'blur(220px)',
-        WebkitBackdropFilter: 'blur(120px)',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
       }}
       onClick={handleBackdropClick}
     >
       <motion.div
-        className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+        className="movie-detail-card"
         variants={cardVariants}
         initial="hidden"
         animate="visible"
       >
         {loading ? (
           <div className="flex items-center justify-center h-96">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="loading-spinner"></div>
           </div>
         ) : error ? (
           <div className="p-6 text-center">
             <AnimatedText text="Subscribe to premium to watch this content" className="text-blue-500" />
             <button
-              className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="subscribe-button"
               onClick={handleSubscribe}
             >
               Subscribe Now
@@ -154,7 +149,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
         ) : movie ? (
           <div className="relative">
             <button
-              className="absolute top-4 right-4 text-gray-700 hover:text-gray-900 bg-white rounded-full p-1 shadow-md z-10"
+              className="close-button"
               onClick={handleClose}
             >
               <svg
@@ -175,7 +170,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
 
             <div className="md:flex">
               <div className="md:w-1/3 p-4">
-                <div className="h-[400px] overflow-hidden rounded-lg shadow-lg">
+                <div className="poster-container">
                   <img
                     src={
                       movie.poster_url ||
@@ -370,4 +365,3 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
 };
 
 export default MovieDetail;
-// ss

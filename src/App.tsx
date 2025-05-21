@@ -69,6 +69,7 @@ import { generateToken, messaging, onMessage } from "./notification/firebase";
 import Success from "./component/Success";
 import MovieFetcher from "./MovieFetcher";
 import Profile from "./component/Profile";
+import Goodbye from "./component/Goodbye";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -119,6 +120,8 @@ function App() {
         <Route path="/success" element={<Success />} />
         <Route path="/fetcher" element={<MovieFetcher />} />
         <Route path="/admin" element={<AdminPanel />} />
+      <Route path="/goodbye" element={<Goodbye />} />
+
         <Route
           path="/movieDetails/:id"
           element={
