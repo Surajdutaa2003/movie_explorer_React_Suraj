@@ -413,3 +413,97 @@ export const deleteMovie = async (id: number): Promise<{ message: string }> => {
     throw new Error(errorMessage);
   }
 };
+
+// ------------------ Update Profile Picture ------------------
+export const updateProfilePicture = async (imageFile: File): Promise<{ message: string; profile_picture_url: string }> => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No token found. User might not be logged in.');
+    }
+
+    // Validate file type and size
+    if (!imageFile.name.toLowerCase().match(/\.(jpg|jpeg|png)$/)) {
+      throw new Error('Only PNG or JPEG files are allowed');
+    }
+    if (imageFile.size > 5 * 1024 * 1024) {
+      throw new Error('Image file exceeds 5MB limit');
+    }
+
+    const formData = new FormData();
+    formData.append('profile_picture', imageFile);
+
+    const response = await axios.patch(
+      `${API_BASE_URL}/users/update_profile_picture`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data as { message: string; profile_picture_url: string };
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.message || 'Failed to update profile picture';
+    console.error('Update profile picture error:', error.response?.data || error.message);
+    throw new Error(errorMessage);
+  }
+};
+
+// ------------------ Get Profile Picture ------------------
+export const getProfilePicture = async (): Promise<{ profile_picture_url: string }> => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No token found. User might not be logged in.');
+    }
+
+    const response = await axios.get(
+      `${API_BASE_URL}/users/show_profile_picture`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data as { profile_picture_url: string };
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.message || 'Failed to retrieve profile picture';
+    console.error('Get profile picture error:', error.response?.data || error.message);
+    throw new Error(errorMessage);
+  }
+};
+
+// ------------------ Cancel Subscription ------------------
+export const cancelSubscription = async (): Promise<{ message: string; plan: string; status: string; current_period_end: string }> => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No token found. User might not be logged in.');
+    }
+
+    const response = await axios.post(
+      `${API_BASE_URL}/subscriptions/cancel`,
+      {},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data as { message: string; plan: string; status: string; current_period_end: string };
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.message || 'Failed to cancel subscription';
+    console.error('Cancel subscription error:', error.response?.data || error.message);
+    throw new Error(errorMessage);
+  }
+};

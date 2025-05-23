@@ -9,7 +9,7 @@ import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/navigation';
 import 'react-toastify/dist/ReactToastify.css';
-import { createSubscription, confirmSubscription } from '../services/subApi';
+import { createSubscription, confirmSubscription, getSubscriptionStatus } from '../services/subApi';
 import { Plan } from '../Types';
 
 const plans: Plan[] = [
@@ -94,7 +94,15 @@ const SubscriptionPage: React.FC = () => {
     setCardError(null);
 
     try {
-      // Remove subscription status check and proceed directly with subscription creation
+      // Check subscription status first
+      const subStatus = await getSubscriptionStatus();
+      if (subStatus.plan !== 'free') {
+        toast.error('You already have an active subscription.');
+        setIsProcessing(false);
+        return;
+      }
+
+      // Proceed with subscription creation if plan is free
       const { client_secret, payment_intent_id, subscription_id } = await createSubscription(selectedPlan);
       console.log('Created subscription:', { client_secret, payment_intent_id, subscription_id });
 
@@ -233,6 +241,7 @@ const SubscriptionPage: React.FC = () => {
                         },
                         invalid: { color: '#ef4444' },
                       },
+                      hidePostalCode: true,
                     }}
                   />
                 </div>

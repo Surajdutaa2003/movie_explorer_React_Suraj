@@ -286,3 +286,5 @@ export const getSubscriptionStatus = async () => {
     throw new Error(errorMessage);
   }
 };
+
+// ------------------ Cancel Subscription ------------------

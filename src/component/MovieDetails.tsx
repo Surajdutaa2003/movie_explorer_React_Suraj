@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, Variants } from 'framer-motion';
 import { getMovieById } from '../services/Api';
+import { getSubscriptionStatus } from '../services/subApi';
 import { Movie } from '../services/Api';
 import '../styles/MovieDetails.css';
 
@@ -15,6 +16,10 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [userPlan, setUserPlan] = useState<string | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [utterance, setUtterance] = useState<SpeechSynthesisUtterance | null>(null);
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -22,6 +27,19 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
       navigate('/');
     }
   }, [navigate, token]);
+
+  useEffect(() => {
+    const fetchSubscriptionStatus = async () => {
+      try {
+        const response = await getSubscriptionStatus();
+        setUserPlan(response.plan || 'free');
+      } catch (err: any) {
+        console.error('Error fetching subscription status:', err);
+      }
+    };
+
+    fetchSubscriptionStatus();
+  }, []);
 
   useEffect(() => {
     const fetchMovieDetail = async () => {
@@ -42,6 +60,36 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
 
     fetchMovieDetail();
   }, [id]);
+
+  const handleTextToSpeech = () => {
+    if (!movie?.description) return;
+
+    if (isSpeaking && !isPaused) {
+      // Pause the speech
+      speechSynthesis.pause();
+      setIsPaused(true);
+    } else if (isSpeaking && isPaused) {
+      // Resume the speech
+      speechSynthesis.resume();
+      setIsPaused(false);
+    } else {
+      // Start new speech
+      const newUtterance = new SpeechSynthesisUtterance(movie.description);
+      newUtterance.lang = 'en-US';
+      newUtterance.rate = 1.0;
+      newUtterance.pitch = 1.0;
+      newUtterance.volume = 1.0;
+      newUtterance.onend = () => {
+        setIsSpeaking(false);
+        setIsPaused(false);
+        setUtterance(null);
+      };
+      setUtterance(newUtterance);
+      speechSynthesis.speak(newUtterance);
+      setIsSpeaking(true);
+      setIsPaused(false);
+    }
+  };
 
   if (!id || !token) return null;
 
@@ -82,8 +130,8 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.03, // Stagger each character
-        delayChildren: 0.8, // Start after card animation
+        staggerChildren: 0.03,
+        delayChildren: 0.8,
       },
     },
   };
@@ -139,19 +187,20 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
         ) : error ? (
           <div className="p-6 text-center">
             <AnimatedText text="Subscribe to premium to watch this content" className="text-blue-500" />
-            <button
-              className="subscribe-button"
-              onClick={handleSubscribe}
-            >
+            <button className="subscribe-button" onClick={handleSubscribe}>
+              Subscribe Now
+            </button>
+          </div>
+        ) : movie && userPlan === 'free' && movie.premium ? (
+          <div className="p-6 text-center">
+            <AnimatedText text="Subscribe to premium to watch this content" className="text-blue-500" />
+            <button className="subscribe-button" onClick={handleSubscribe}>
               Subscribe Now
             </button>
           </div>
         ) : movie ? (
           <div className="relative">
-            <button
-              className="close-button"
-              onClick={handleClose}
-            >
+            <button className="close-button" onClick={handleClose}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -214,10 +263,42 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
                   </div>
                 </div>
 
-                <AnimatedText
-                  text={movie.description}
-                  className="text-gray-700 mb-6"
-                />
+                <div className="flex items-center">
+                  <AnimatedText
+                    text={movie.description}
+                    className="text-gray-700 mb-6"
+                  />
+                  <button
+                    onClick={handleTextToSpeech}
+                    className="ml-2 text-gray-500 hover:text-gray-800 transition"
+                    title={isSpeaking && !isPaused ? 'Pause description' : 'Listen to description'}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      {isSpeaking && !isPaused ? (
+                        <>
+                          <rect x="6" y="4" width="4" height="16"></rect>
+                          <rect x="14" y="4" width="4" height="16"></rect>
+                        </>
+                      ) : (
+                        <>
+                          <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+                          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                        </>
+                      )}
+                    </svg>
+                  </button>
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div className="flex items-center">
@@ -357,7 +438,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => {} }) => {
             </div>
           </div>
         ) : (
-          <AnimatedText text="Movie not found" className="text-center text-gray-700" />
+          <AnimatedText text="Movie not found" className="text-center text-gray-600" />
         )}
       </motion.div>
     </div>
