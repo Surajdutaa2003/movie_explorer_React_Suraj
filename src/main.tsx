@@ -11,7 +11,7 @@ import { store } from './redux/store';
 const stripePromise = loadStripe('pk_test_51RKDf4IS7GvTiu3zYWZzTGMJPwdUtnO0Q8kvI9YnfOL3bwBerxGsmvxSHXJf8TrMCqnqzJ0YDsCGjplq7X1UyQMD00RidEgjO9'); // Replace with your Stripe publishable key
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+  
 
   
     <Provider store={store}>
@@ -19,6 +19,6 @@ createRoot(document.getElementById('root')!).render(
         <App />
       </Elements>
     </Provider>
-    </StrictMode>
+   
   
 );

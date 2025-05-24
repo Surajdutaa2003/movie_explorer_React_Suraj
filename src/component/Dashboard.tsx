@@ -69,6 +69,15 @@ const Dashboard: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Add a new useEffect at the top with other useEffects
+  useEffect(() => {
+    // Reset genre selection to default when Dashboard mounts
+    dispatch(setSelectedGenre(''));
+    
+    // Fetch movies with empty genre
+    dispatch(fetchMovies({ page, searchQuery: debouncedSearchQuery, genre: '' }));
+  }, []); // Empty dependency array means this runs once when component mounts
+
   const openMovieDetail = (movie: Movie) => {
     setSelectedMovie(movie);
   };
@@ -125,6 +134,13 @@ const Dashboard: React.FC = () => {
                 Subscribe
               </Link>
             )}
+            <Link 
+              to="/suggestions" 
+              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300"
+            >
+              <span role="img" aria-label="mood">🎭</span>
+              <span>Movie Mood</span>
+            </Link>
             <div className="relative group">
               <div className="flex items-center space-x-2 cursor-pointer">
                 <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,6 +179,14 @@ const Dashboard: React.FC = () => {
             <button onClick={handleLogout} className="text-sm font-medium text-gray-700 hover:text-blue-600 text-left">
               Logout
             </button>
+            <Link 
+              to="/suggestions" 
+              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg"
+              onClick={() => setMenuOpen(false)}
+            >
+              <span role="img" aria-label="mood">🎭</span>
+              <span>Movie Mood</span>
+            </Link>
           </div>
         </div>
       )}

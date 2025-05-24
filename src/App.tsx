@@ -70,6 +70,7 @@ import Success from "./component/Success";
 import MovieFetcher from "./MovieFetcher";
 import Profile from "./component/Profile";
 import Goodbye from "./component/Goodbye";
+import SuggestionPage from './component/SuggestionPage';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -121,6 +122,7 @@ function App() {
         <Route path="/fetcher" element={<MovieFetcher />} />
         <Route path="/admin" element={<AdminPanel />} />
       <Route path="/goodbye" element={<Goodbye />} />
+      <Route path="/suggestions" element={<SuggestionPage />} />
 
         <Route
           path="/movieDetails/:id"
