@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { fetchMovies, setSelectedGenre } from '../redux/movieSlice';
 import { RootState, AppDispatch } from '../redux/store';
 import MovieList from './MovieList';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 interface MoodMap {
   [key: string]: string;
@@ -81,6 +82,17 @@ const SuggestionPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-12 px-4">
       <div className="max-w-4xl mx-auto">
+        {/* Add this button at the top */}
+        <motion.button
+          onClick={() => navigate('/')}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="mb-6 flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors duration-300"
+        >
+          <ArrowBackIcon />
+          <span>Go Back</span>
+        </motion.button>
+
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
           How are you feeling today?
         </h1>
@@ -148,7 +160,7 @@ const SuggestionPage: React.FC = () => {
                 const navigationState = { fromSuggestions: true };
                 console.log('Navigating from suggestions with state:', navigationState);
                 localStorage.setItem('fromSuggestions', 'true')
-                navigate(`/movieDetails/${movie.id}`);
+                navigate(`/movie/${movie.id}`);
               }}
             />
           </div>
