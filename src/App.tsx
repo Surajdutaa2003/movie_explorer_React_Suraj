@@ -125,7 +125,7 @@ function App() {
       <Route path="/suggestions" element={<SuggestionPage />} />
 
         <Route
-          path="/movie/:id"
+          path="/movies/:id"
           element={
             <ProtectedRoute>
               <MovieDetail />

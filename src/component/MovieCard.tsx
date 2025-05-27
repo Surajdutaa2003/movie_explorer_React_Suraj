@@ -54,7 +54,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onDeleteMovie, onMovieClic
       if (onMovieClick) {
         onMovieClick(movie);
       }
-      navigate(`/movie/${movie.id}`);
+      navigate(`/movies/${movie.id}`);
       clickCountRef.current = 0;
     }
   };
