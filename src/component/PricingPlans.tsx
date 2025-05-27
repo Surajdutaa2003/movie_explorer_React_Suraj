@@ -46,7 +46,7 @@ const plans: Plan[] = [
 ];
 
 const SubscriptionPage: React.FC = () => {
-  window.scrollTo(0, 0);
+  // window.scrollTo(0, 0);
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();

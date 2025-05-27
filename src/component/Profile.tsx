@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { updateProfilePicture, getProfilePicture, cancelSubscription } from '../services/Api';
 import { getSubscriptionStatus } from '../services/subApi';
 import { toast } from 'react-toastify';
+import CloseIcon from '@mui/icons-material/Close';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 interface User {
   id: number;
@@ -302,19 +304,7 @@ const Profile: React.FC = () => {
               onClick={handleCancelSubscription}
               className="flex-1 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              <CloseIcon sx={{ width: 20, height: 20 }} />
               <span>Cancel Subscription</span>
             </button>
           )}
@@ -322,19 +312,7 @@ const Profile: React.FC = () => {
             onClick={handleGoBack}
             className="flex-1 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition transform hover:scale-105 hover:shadow-lg text-sm flex items-center justify-center space-x-2"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
+            <ArrowBackIcon sx={{ width: 16, height: 16 }} />
             <span>Go Back</span>
           </button>
         </div>

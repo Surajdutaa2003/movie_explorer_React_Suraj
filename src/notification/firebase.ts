@@ -1,30 +1,9 @@
 import { initializeApp } from "firebase/app";
 import { deleteToken, getMessaging, getToken, onMessage } from "firebase/messaging";
+import { toast } from "react-toastify";
 import { sendTokenToBackend } from "../services/Api";
 
-
-// ...existing code...
-const sendDeviceTokenToBackend = async (token: string | null) => {
-  try {
-    if (!token || typeof token !== "string" || token.length < 50) {
-      throw new Error('Invalid token format');
-    }
-    
-    await sendTokenToBackend(token);
-  } catch (error) {
-    console.error('Error sending device token:', error);
-  }
-};
-// const firebaseConfig = {
-//     apiKey: "AIzaSyCKt2wYuYzr0uKWe8o5jUE6p9wb-3lSK68",
-//     authDomain: "movie-explorer-5bc8a.firebaseapp.com",
-//     projectId: "movie-explorer-5bc8a",
-//     storageBucket: "movie-explorer-5bc8a.firebasestorage.app",
-//     messagingSenderId: "561268525206",
-//     appId: "1:561268525206:web:9ba893c094bf72aed81ab7",
-//     measurementId: "G-XPP4G1SXPV"
-// };
-
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCn_PDsUKRavjNluvdIkGJn40ZUcMoJ2-E",
   authDomain: "movieexplorerplus-a09f0.firebaseapp.com",
@@ -35,15 +14,63 @@ const firebaseConfig = {
   measurementId: "G-T7N8YDJVC5"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const messaging = getMessaging(app);
 
+// Utility to validate URLs
+const isValidUrl = (url) => {
+  return /^https:\/\/movieexplorerplus-a09f0\.firebaseapp\.com\/movies\/\d+(?:\?.*)?$/.test(url);
+};
+
+// Handle foreground push notifications
+onMessage(messaging, (payload) => {
+  try {
+    const notification = payload?.notification || {};
+    const data = payload?.data || {};
+    const { title = "No Title", body = "No Body" } = notification;
+    const { url, notification_type } = data;
+
+    if (notification_type === "movie" && url && isValidUrl(url)) {
+      const handleClick = () => {
+        window.location.href = url;
+      };
+      toast.info(`${title}: ${body}`, { onClick: handleClick });
+    } else {
+      toast.info(`${title}: ${body}`);
+    }
+  } catch (error) {
+    console.error("Error handling FCM message:", error);
+    toast.error("Failed to process notification");
+  }
+});
+
+// Handle WhatsApp messages (placeholder for WhatsApp integration)
+export const handleWhatsAppMessage = (message) => {
+  try {
+    const { body = "" } = message;
+    const urlMatch = body.match(/(https:\/\/movieexplorerplus-a09f0\.firebaseapp\.com\/movies\/\d+(?:\?.*)?)/);
+    if (urlMatch && isValidUrl(urlMatch[0])) {
+      const handleClick = () => {
+        window.location.href = urlMatch[0];
+      };
+      toast.info(body, { onClick: handleClick });
+    } else {
+      toast.info(body);
+    }
+  } catch (error) {
+    console.error("Error handling WhatsApp message:", error);
+    toast.error("Failed to process message");
+  }
+};
+
+// Generate and send FCM token
 export const generateToken = async () => {
   try {
+    const vapidKey = "BIr3lBH6e_kZaabd6ckdWCWzpvHjXh_gFWV6MEzr3TjL1CWKVIzd-Pih9pbH5wD5I43b7kQITOxYScXY7ACo0D8";
+
     // Check if permission is already granted
     if (Notification.permission === "granted") {
-      // const vapidKey = "BB-kLe4vRvnBrHpgtnGuaVLdXTLRKbxJMmX3Ja7Tw92tW9NDKoGzQW1WXZDOII2ObL_bjPzBQvLOL9L6PnkbYxw";
-      const vapidKey = "BIr3lBH6e_kZaabd6ckdWCWzpvHjXh_gFWV6MEzr3TjL1CWKVIzd-Pih9pbH5wD5I43b7kQITOxYScXY7ACo0D8"
       const token = await getToken(messaging, { vapidKey }).catch(async (error) => {
         if (error.code === "messaging/token-unsubscribed" || error.code === "messaging/invalid-token") {
           console.log("Existing token invalid or unsubscribed, generating new token");
@@ -71,7 +98,6 @@ export const generateToken = async () => {
     }
 
     // Generate new token
-    const vapidKey = "BIr3lBH6e_kZaabd6ckdWCWzpvHjXh_gFWV6MEzr3TjL1CWKVIzd-Pih9pbH5wD5I43b7kQITOxYScXY7ACo0D8";
     const token = await getToken(messaging, { vapidKey });
     console.log("New FCM Token:", token);
 
@@ -89,6 +115,7 @@ export const generateToken = async () => {
   }
 };
 
+// Monitor FCM token
 export const monitorToken = async () => {
   try {
     const vapidKey = "BIr3lBH6e_kZaabd6ckdWCWzpvHjXh_gFWV6MEzr3TjL1CWKVIzd-Pih9pbH5wD5I43b7kQITOxYScXY7ACo0D8";
@@ -115,4 +142,5 @@ export const monitorToken = async () => {
   }
 };
 
+// Export for external use
 export { onMessage };

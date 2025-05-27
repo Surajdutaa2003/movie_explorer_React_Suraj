@@ -56,7 +56,7 @@ const MovieList: React.FC<MovieListProps> = ({ movies, onMovieClick, onDeleteMov
   const allTimeFavorites = movies.filter((movie) => Number(movie.rating) >= 8.0);
 
   // Trending movies with rating > 7
-  const trendingMovies = movies.filter((movie) => Number(movie.rating) > 7);
+  const trendingMovies = movies.filter((movie) => Number(movie.rating) > 7 );
 
   const topActors = [
     { name: 'Leonardo DiCaprio', image: 'https://cdn.britannica.com/65/227665-050-D74A477E/American-actor-Leonardo-DiCaprio-2016.jpg?w=400&h=300&c=crop' },

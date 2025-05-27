@@ -11,14 +11,14 @@ interface MoodMap {
 }
 
 const moodToGenreMap: MoodMap = {
-  'Happy': 'Comedy',
-  'Sad': 'Drama',
-  'Excited': 'Action',
-  'Romantic': 'Romance',
-  'Scared': 'Horror',
-  'Adventurous': 'Adventure',
-  'Mysterious': 'Mystery',
-  'Thoughtful': 'Documentary',
+  Happy: 'Comedy',
+  Sad: 'Drama',
+  Excited: 'Action',
+  Romantic: 'Romance',
+  Scared: 'Horror',
+  Adventurous: 'Adventure',
+  Mysterious: 'Mystery',
+  Thoughtful: 'Documentary',
 };
 
 // Custom debounce hook
@@ -43,7 +43,7 @@ const SuggestionPage: React.FC = () => {
   const [moodInput, setMoodInput] = useState<string>('');
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  
+
   const { movies, loading, error, page } = useSelector((state: RootState) => state.movies);
 
   // Debounce the mood input with a 3-second delay
@@ -52,10 +52,10 @@ const SuggestionPage: React.FC = () => {
   useEffect(() => {
     if (debouncedMoodInput) {
       const inputLower = debouncedMoodInput.toLowerCase();
-      const matchedMood = Object.keys(moodToGenreMap).find(mood => 
+      const matchedMood = Object.keys(moodToGenreMap).find(mood =>
         inputLower.includes(mood.toLowerCase())
       );
-      
+
       if (matchedMood) {
         setSelectedMood(matchedMood);
       } else {
@@ -110,11 +110,10 @@ const SuggestionPage: React.FC = () => {
                 setSelectedMood(mood);
                 setMoodInput(mood); // Update input to reflect selected mood
               }}
-              className={`p-4 rounded-lg shadow-md transition-colors duration-300 ${
-                selectedMood === mood
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white hover:bg-blue-50'
-              }`}
+              className={`p-4 rounded-lg shadow-md transition-colors duration-300 ${selectedMood === mood
+                ? 'bg-blue-500 text-white'
+                : 'bg-white hover:bg-blue-50'
+                }`}
             >
               <div className="text-2xl mb-2">
                 {getMoodEmoji(mood)}
@@ -139,7 +138,18 @@ const SuggestionPage: React.FC = () => {
             </h2>
             <MovieList
               movies={movies}
-              onMovieClick={(movie) => navigate(`/movieDetails/${movie.id}`)}
+              onMovieClick={(movie) => {
+                // console.log('Navigating to movie details with state:', { from: 'suggestions' });
+                // // navigate(`/movieDetails/${movie.id}`, { state: { from: 'suggestions' } });
+                // navigate(`/movieDetails/${movie.id}`, {
+                //   state: { fromSuggestions: true }  // Changed from { from: 'suggestions' }
+                // });
+
+                const navigationState = { fromSuggestions: true };
+                console.log('Navigating from suggestions with state:', navigationState);
+                localStorage.setItem('fromSuggestions', 'true')
+                navigate(`/movieDetails/${movie.id}`);
+              }}
             />
           </div>
         ) : selectedMood && (
@@ -155,14 +165,14 @@ const SuggestionPage: React.FC = () => {
 // Helper function to get emoji for each mood
 function getMoodEmoji(mood: string): string {
   const emojiMap: MoodMap = {
-    'Happy': '😊',
-    'Sad': '😢',
-    'Excited': '🤩',
-    'Romantic': '💝',
-    'Scared': '😱',
-    'Adventurous': '🏃‍♂️',
-    'Mysterious': '🔍',
-    'Thoughtful': '🤔',
+    Happy: '😊',
+    Sad: '😢',
+    Excited: '🤩',
+    Romantic: '💝',
+    Scared: '😱',
+    Adventurous: '🏃‍♂️',
+    Mysterious: '🔍',
+    Thoughtful: '🤔',
   };
   return emojiMap[mood] || '🎬';
 }

@@ -7,14 +7,16 @@ import {
   Box,
   Stack,
   Divider,
+  Dialog,
 } from '@mui/material';
 import { MdEmail, MdLock, MdPerson, MdPhone } from 'react-icons/md';
-import { signupUser } from '../services/Api'; // Using the signupUser function from Vishal API
+import { signupUser } from '../services/Api';
 import { FaApple } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import throttle from 'lodash/throttle';
 import LoginLogo from '../assets/loginLogo.png';
 import toast, { Toaster } from 'react-hot-toast';
+import WhatsappOptIn from './WhatsappOptIn';
 
 interface SignupState {
   firstName: string;
@@ -23,7 +25,9 @@ interface SignupState {
   password: string;
   confirmPassword: string;
   mobile: string;
+  countryCode: string;
   error: string | null;
+  showWhatsAppDialog: boolean; // New state for dialog visibility
 }
 
 class SignupPage extends Component<{}, SignupState> {
@@ -38,10 +42,11 @@ class SignupPage extends Component<{}, SignupState> {
       password: '',
       confirmPassword: '',
       mobile: '',
+      countryCode: '+91',
       error: null,
+      showWhatsAppDialog: false,
     };
 
-    // Throttle the sign-up function to once every 3 seconds, but disable throttling in test environment
     if (process.env.NODE_ENV === 'test') {
       this.throttledSignup = this._handleSignUp.bind(this);
     } else {
@@ -78,8 +83,8 @@ class SignupPage extends Component<{}, SignupState> {
       return;
     }
 
-    if (!/^\d{10}$/.test(mobile)) {
-      toast.error('Mobile number must be 10 digits');
+    if (mobile.length !== 10 || !/^\d+$/.test(mobile)) {
+      toast.error('Please enter a valid 10-digit mobile number');
       return;
     }
 
@@ -87,7 +92,7 @@ class SignupPage extends Component<{}, SignupState> {
       const signupData = {
         name: `${firstName} ${lastName}`.trim(),
         email,
-        mobile_number: mobile,
+        mobile_number: `${this.state.countryCode}${mobile}`,
         password,
       };
 
@@ -98,9 +103,8 @@ class SignupPage extends Component<{}, SignupState> {
       if (response.user?.id) {
         localStorage.setItem('token', response.token);
         toast.success('Account created successfully!', { id: loadingToast });
-        setTimeout(() => {
-          window.location.href = '/login';
-        }, 1500);
+        // Show WhatsApp dialog instead of redirecting
+        this.setState({ showWhatsAppDialog: true });
       } else {
         toast.error('Signup failed. Please try again.', { id: loadingToast });
       }
@@ -111,8 +115,21 @@ class SignupPage extends Component<{}, SignupState> {
     }
   };
 
+  // Callback for WhatsappOptIn
+  handleWhatsAppOptIn = () => {
+    console.log('User attempted WhatsApp opt-in');
+  };
+
+  // Handle dialog close
+  handleDialogClose = () => {
+    this.setState({ showWhatsAppDialog: false });
+    setTimeout(() => {
+      window.location.href = '/login';
+    }, 500); // Small delay for smooth transition
+  };
+
   render() {
-    const { firstName, lastName, email, password, confirmPassword, mobile, error } = this.state;
+    const { firstName, lastName, email, password, confirmPassword, mobile, error, showWhatsAppDialog } = this.state;
 
     return (
       <Box
@@ -229,14 +246,31 @@ class SignupPage extends Component<{}, SignupState> {
 
             <Box display="flex" alignItems="flex-end">
               <MdPhone size={20} style={{ marginRight: 8, color: '#9e9e9e' }} />
-              <TextField
-                fullWidth
-                variant="standard"
-                placeholder="Mobile Number"
-                name="mobile"
-                value={mobile}
-                onChange={this.handleInputChange}
-              />
+              <Box display="flex" width="100%">
+                <TextField
+                  disabled
+                  variant="standard"
+                  value={this.state.countryCode}
+                  sx={{ width: '60px', mr: 1 }}
+                  inputProps={{
+                    style: { color: '#666' }
+                  }}
+                />
+                <TextField
+                  fullWidth
+                  variant="standard"
+                  placeholder="Mobile Number"
+                  name="mobile"
+                  value={mobile}
+                  onChange={this.handleInputChange}
+                  inputProps={{
+                    maxLength: 10,
+                    pattern: '[0-9]*',
+                    inputMode: 'numeric'
+                  }}
+                  type="tel"
+                />
+              </Box>
             </Box>
 
             <Button
@@ -278,6 +312,10 @@ class SignupPage extends Component<{}, SignupState> {
             </Typography>
           </Box>
         </Paper>
+
+        <Dialog open={showWhatsAppDialog} onClose={this.handleDialogClose}>
+          <WhatsappOptIn onOptIn={this.handleWhatsAppOptIn} onClose={this.handleDialogClose} />
+        </Dialog>
       </Box>
     );
   }

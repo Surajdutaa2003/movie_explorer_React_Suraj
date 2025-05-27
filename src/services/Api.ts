@@ -232,7 +232,7 @@ export const searchMovieAPI = async (page: number = 1, title: string, genre?: st
   try {
     const token = localStorage.getItem('token');
     const response = await axios.get(
-      `${AALEKH_API_BASE_URL}/api/v1/movies`,
+      `${API_BASE_URL}/api/v1/movies`,
       {
         params,
         headers: {

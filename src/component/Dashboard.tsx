@@ -109,7 +109,7 @@ const Dashboard: React.FC = () => {
     <div className="min-h-screen bg-white text-gray-900 font-sans">
       <nav className={`fixed w-full top-0 z-50 bg-white shadow-lg border-b border-gray-200 p-4 flex items-center justify-between ${isContentVisible ? 'content-visible' : 'content-hidden'}`}>
         <div className="flex items-center space-x-4">
-          <span className="text-3xl font-extrabold text-blue-600">Movie+</span>
+          <span className="text-3xl font-extrabold text-blue-600">Movie Explor</span>
         </div>
         <div className="flex items-center space-x-6">
           <div className="md:hidden">

@@ -25,14 +25,14 @@ interface MovieState {
 
 const initialState: MovieState = {
   movies: [],
-  genres: ['All', 'Comedy', 'Horror', 'Thriller', 'Sci-Fi', 'Romance'],
+  genres: ['All', 'Comedy', 'Horror', 'Thriller', 'Sci-Fi', 'Romance'], // Changed 'Genre' to 'All'
   loading: false,
   error: null,
   successMessage: null,
   page: 1,
   totalPages: 1,
   searchQuery: '',
-  selectedGenre: 'All',
+  selectedGenre: 'All', // Changed from 'Genre' to 'All'
 };
 
 export const fetchMovies = createAsyncThunk(
@@ -40,7 +40,7 @@ export const fetchMovies = createAsyncThunk(
   async ({ page, searchQuery, genre }: { page: number; searchQuery: string; genre: string }) => {
     const filters: { page?: number; title?: string; genre?: string } = { page };
     if (searchQuery) filters.title = searchQuery;
-    if (genre !== 'All') filters.genre = genre;
+    if (genre !== 'All') filters.genre = genre; // Changed from 'Genre' to 'All'
     
     const response = await getMovies(filters);
     return response;
@@ -77,8 +77,8 @@ const movieSlice = createSlice({
         
         const fetchedGenres = Array.from(new Set(action.payload.movies.map((movie: Movie) => movie.genre)));
         state.genres = [
-          'All',
-          ...new Set([...state.genres.filter(g => g !== 'All'), ...fetchedGenres]),
+          'All', // Changed from 'Genre' to 'All'
+          ...new Set([...state.genres.filter(g => g !== 'All'), ...fetchedGenres]), // Changed from 'Genre' to 'All'
         ];
       })
       .addCase(fetchMovies.rejected, (state, action) => {
