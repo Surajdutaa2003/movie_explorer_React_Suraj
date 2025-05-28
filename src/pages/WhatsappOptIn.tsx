@@ -4,9 +4,11 @@ import { Box, Button, Typography } from '@mui/material';
 
 const WhatsappOptIn = ({ onOptIn, onClose }: { onOptIn: () => void; onClose: () => void }) => {
   const joinLink = 'https://wa.me/+14155238886?text=join%20welcome-coat';
+  
   const handleJoin = () => {
     localStorage.setItem('whatsapp_opt_in_attempted', 'true');
     onOptIn();
+    // Open WhatsApp link in new tab without closing dialog
     window.open(joinLink, '_blank', 'noopener,noreferrer');
   };
 
@@ -30,6 +32,9 @@ const WhatsappOptIn = ({ onOptIn, onClose }: { onOptIn: () => void; onClose: () 
           Skip
         </Button>
       </Box>
+      <Typography variant="body2" color="textSecondary" mt={2}>
+        Click "Skip" when you're done joining WhatsApp notifications
+      </Typography>
     </Box>
   );
 };

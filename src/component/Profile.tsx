@@ -31,6 +31,12 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
+      // Start rotation animation immediately
+      setIsRotating(true);
+      setTimeout(() => {
+        setIsRotating(false);
+      }, 1000);
+
       try {
         const userData = localStorage.getItem('user');
         if (userData) {
@@ -71,11 +77,6 @@ const Profile: React.FC = () => {
           console.error('Error fetching subscription status:', error.message);
           // Error is already handled by toast in getSubscriptionStatus
         }
-
-        setIsRotating(true);
-        setTimeout(() => {
-          setIsRotating(false);
-        }, 2000);
       } catch (error) {
         console.error('Error retrieving user from localStorage:', error);
         toast.error('Error retrieving user data');
@@ -87,15 +88,6 @@ const Profile: React.FC = () => {
 
   const handleGoBack = () => {
     window.location.href = '/';
-  };
-
-  const handleBoxClick = () => {
-    if (!isRotating) {
-      setIsRotating(true);
-      setTimeout(() => {
-        setIsRotating(false);
-      }, 1000);
-    }
   };
 
   const handleAvatarClick = () => {
@@ -164,7 +156,6 @@ const Profile: React.FC = () => {
             border: '1px solid rgba(255, 255, 255, 0.1)',
             boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
           }}
-          onClick={handleBoxClick}
         >
           <h2 className="text-2xl font-semibold text-white mb-3">No Profile Found</h2>
           <p className="text-gray-200 mb-4">Please log in to view your profile.</p>
@@ -178,13 +169,16 @@ const Profile: React.FC = () => {
             @keyframes coinFlip {
               0% {
                 transform: perspective(1000px) rotateY(0deg);
+                opacity: 0.8;
               }
               100% {
                 transform: perspective(1000px) rotateY(360deg);
+                opacity: 1;
               }
             }
             .animate-coinFlip {
-              animation: coinFlip 1s ease-in-out;
+              animation: coinFlip 1s cubic-bezier(0.4, 0, 0.2, 1);
+              animation-fill-mode: forwards;
             }
           `}</style>
         </div>
@@ -209,7 +203,6 @@ const Profile: React.FC = () => {
           border: '1px solid rgba(255, 255, 255, 0.1)',
           boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
         }}
-        onClick={handleBoxClick}
       >
         <h2 className="text-xl font-semibold text-white mb-6">Profile</h2>
         <div className="flex flex-col items-center mb-6">
@@ -320,13 +313,16 @@ const Profile: React.FC = () => {
           @keyframes coinFlip {
             0% {
               transform: perspective(1000px) rotateY(0deg);
+              opacity: 0.8;
             }
             100% {
               transform: perspective(1000px) rotateY(360deg);
+              opacity: 1;
             }
           }
           .animate-coinFlip {
-            animation: coinFlip 1s ease-in-out;
+            animation: coinFlip 1s cubic-bezier(0.4, 0, 0.2, 1);
+            animation-fill-mode: forwards;
           }
         `}</style>
       </div>

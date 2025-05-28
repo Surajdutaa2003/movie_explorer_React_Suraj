@@ -118,14 +118,15 @@ class SignupPage extends Component<{}, SignupState> {
   // Callback for WhatsappOptIn
   handleWhatsAppOptIn = () => {
     console.log('User attempted WhatsApp opt-in');
+    // Remove automatic closing of dialog
+    // The dialog will stay open until user clicks "Skip"
   };
 
-  // Handle dialog close
+  // Update the handleDialogClose method to only close on "Skip"
   handleDialogClose = () => {
     this.setState({ showWhatsAppDialog: false });
-    setTimeout(() => {
-      window.location.href = '/login';
-    }, 500); // Small delay for smooth transition
+    // Navigate to login page
+    window.location.href = '/login';
   };
 
   render() {

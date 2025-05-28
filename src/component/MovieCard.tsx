@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from "react-hot-toast";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 
 interface MovieCardProps {
   movie: Movie;
@@ -78,30 +79,23 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onDeleteMovie, onMovieClic
   };
 
   return (
-    <div
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    className="relative group overflow-hidden rounded-lg shadow-lg transition-transform transform hover:scale-105 cursor-pointer"
+    <div className="relative group overflow-hidden rounded-lg shadow-lg transition-transform transform hover:scale-105 cursor-pointer"
       onClick={handleClick}
     >
       <img
-        src={movie.poster_url ||'no movie'}
+        src={movie.poster_url || 'no movie'}
         alt={movie.title}
         className="w-full h-[300px] object-cover"
-       
       />
+      
+      {/* Add Premium Tag */}
+      {movie.premium && (
+        <div className="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded-full flex items-center space-x-1 z-10">
+          <WorkspacePremiumIcon sx={{ width: 16, height: 16 }} />
+          <span className="text-sm font-medium">Premium</span>
+        </div>
+      )}
+
       {userRole === 'supervisor' && (
         <div className="absolute top-2 right-2 flex space-x-2">
           <button
@@ -127,10 +121,17 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onDeleteMovie, onMovieClic
       <div className="absolute inset-0 bg-gray-900 bg-opacity-70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
         <h3 className="text-white text-lg font-semibold">{movie.title}</h3>
         <p className="text-gray-200 text-sm">{movie.genre || 'Unknown'}</p>
-       <p className="text-yellow-300 text-sm">
-  Rating: {parseFloat(movie.rating.toString()) ? parseFloat(movie.rating.toString()).toFixed(1) : 'N/A'}
-</p>
-
+        <div className="flex items-center justify-between">
+          <p className="text-yellow-300 text-sm">
+            Rating: {parseFloat(movie.rating.toString()) ? parseFloat(movie.rating.toString()).toFixed(1) : 'N/A'}
+          </p>
+          {movie.premium && (
+            <span className="text-yellow-400 text-sm flex items-center">
+              <WorkspacePremiumIcon sx={{ width: 16, height: 16, marginRight: '4px' }} />
+              Premium
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );
