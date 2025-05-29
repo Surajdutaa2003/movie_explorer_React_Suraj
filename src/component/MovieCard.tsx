@@ -125,12 +125,12 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onDeleteMovie, onMovieClic
           <p className="text-yellow-300 text-sm">
             Rating: {parseFloat(movie.rating.toString()) ? parseFloat(movie.rating.toString()).toFixed(1) : 'N/A'}
           </p>
-          {movie.premium && (
+          {/* {movie.premium && (
             <span className="text-yellow-400 text-sm flex items-center">
               <WorkspacePremiumIcon sx={{ width: 16, height: 16, marginRight: '4px' }} />
               Premium
             </span>
-          )}
+          )} */}
         </div>
       </div>
     </div>

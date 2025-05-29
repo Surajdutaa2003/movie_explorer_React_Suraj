@@ -45,6 +45,7 @@ const Dashboard: React.FC = () => {
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   
   const userRole = localStorage.getItem('role');
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     dispatch(fetchSliderMovies());
@@ -141,21 +142,30 @@ const Dashboard: React.FC = () => {
               <span role="img" aria-label="mood">🎭</span>
               <span>Movie Mood</span>
             </Link>
-            <div className="relative group">
-              <div className="flex items-center space-x-2 cursor-pointer">
-                <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
+            {token ? (
+              <div className="relative group">
+                <div className="flex items-center space-x-2 cursor-pointer">
+                  <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg dropdown-menu">
+                  <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Profile
+                  </Link>
+                  <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Logout
+                  </button>
+                </div>
               </div>
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg dropdown-menu">
-                <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Profile
-                </Link>
-                <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Logout
-                </button>
-              </div>
-            </div>
+            ) : (
+              <Link 
+                to="/login" 
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                Login
+              </Link>
+            )}
           </div>
         </div>
       </nav>
@@ -187,6 +197,15 @@ const Dashboard: React.FC = () => {
               <span role="img" aria-label="mood">🎭</span>
               <span>Movie Mood</span>
             </Link>
+            {!token && (
+              <Link 
+                to="/login" 
+                className="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-lg hover:bg-blue-600" 
+                onClick={() => setMenuOpen(false)}
+              >
+                Login
+              </Link>
+            )}
           </div>
         </div>
       )}

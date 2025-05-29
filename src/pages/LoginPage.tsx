@@ -39,12 +39,12 @@ interface LoginPageState {
   password: string;
   error: string | null;
   hoverCount: number;
+  isLoading: boolean; // New state for loading
 }
 
 class LoginPage extends Component<LoginPageProps, LoginPageState> {
   throttledLogin: () => void;
 
-  // Add this new property
   hasInteracted: boolean = false;
 
   constructor(props: LoginPageProps) {
@@ -54,6 +54,7 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
       password: "",
       error: null,
       hoverCount: 0,
+      isLoading: false, // Initialize loading state
     };
 
     this.throttledLogin = throttle(this.handleLogin.bind(this), 2000, {
@@ -102,6 +103,8 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
       return;
     }
 
+    this.setState({ isLoading: true }); // Set loading to true
+
     try {
       const response = (await loginUser({ email, password })) as LoginResponse;
       console.log("Login response:", response);
@@ -138,12 +141,14 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
         position: "top-right",
       });
       console.error("Login error:", error);
+    } finally {
+      this.setState({ isLoading: false }); // Reset loading state
     }
   };
 
   handleHover = () => {
     if (!this.hasInteracted) {
-      return; // Don't trigger animation if user hasn't interacted
+      return;
     }
     
     if (!this.state.email.trim() || !this.state.password.trim()) {
@@ -153,19 +158,16 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
     }
   };
 
-  // Add this new method
   handleFieldInteraction = () => {
     this.hasInteracted = true;
   };
 
   render() {
-    const { email, password, error, hoverCount } = this.state;
+    const { email, password, error, hoverCount, isLoading } = this.state;
     const { navigate } = this.props;
 
-    // Check if all fields are filled
     const isFormValid = email.trim() !== "" && password.trim() !== "";
 
-    // Animation variants for the button
     const buttonVariants = {
       normal: { y: 0 },
       runAwayTop: {
@@ -184,7 +186,6 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
       },
     };
 
-    // Determine animation based on hover count
     const getAnimationVariant = () => {
       if (isFormValid) return "normal";
       return hoverCount % 2 === 1 ? "runAwayTop" : "runAwayBottom";
@@ -284,16 +285,15 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
                   bgcolor: "#1976d2",
                   "&:hover": { bgcolor: "#115293" },
                   transition: "background-color 0.3s ease-in-out",
-
                   fontSize: "1rem",
                   width: "80%",
                   borderRadius: "8px",
                 }}
                 onClick={this.throttledLogin}
+                disabled={isLoading} // Disable button when loading
               >
-                Sign In
+                {isLoading ? "Signing In..." : "Sign In"} 
               </Button>
-
             </motion.div>
           </Stack>
 

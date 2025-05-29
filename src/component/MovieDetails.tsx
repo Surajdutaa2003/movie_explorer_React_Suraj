@@ -32,6 +32,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => { } }) => {
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [utterance, setUtterance] = useState<SpeechSynthesisUtterance | null>(null);
   const token = localStorage.getItem('token');
+  const role = localStorage.getItem('role');
 
   useEffect(() => {
     console.log('MovieDetail mounted with location:', {
@@ -247,7 +248,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => { } }) => {
               Subscribe Now
             </button>
           </div>
-        ) : movie && userPlan === 'free' && movie.premium ? (
+        ) : movie && userPlan === 'free' && role !='supervisor'&& movie.premium ? (
           <div className="p-6 text-center">
             <AnimatedText text="Subscribe to premium to watch this content" className="text-blue-500" />
             <button className="subscribe-button" onClick={handleSubscribe}>

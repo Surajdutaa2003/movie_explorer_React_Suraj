@@ -56,10 +56,12 @@ const AdminPanel: React.FC = () => {
   const [formData, setFormData] = useState<MovieFormData>(initialFormData);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false); // New state for loading
   const isEditMode = !!movie;
 
   useEffect(() => {
     setFormData(initialFormData);
+    window.scrollTo(0, 0); // Scroll to top when component mounts or location.state changes
   }, [location.state]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -85,6 +87,7 @@ const AdminPanel: React.FC = () => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
+    setIsLoading(true); // Disable button
 
     const loadingToast = toast.loading(isEditMode ? 'Updating movie...' : 'Adding movie...');
 
@@ -147,6 +150,8 @@ const AdminPanel: React.FC = () => {
       } else {
         toast.error(err.message || `Failed to ${isEditMode ? 'update' : 'add'} movie.`, { id: loadingToast });
       }
+    } finally {
+      setIsLoading(false); // Re-enable button
     }
   };
 
@@ -216,8 +221,7 @@ const AdminPanel: React.FC = () => {
                 <option value="Romance">Romance</option>
                 <option value="Thriller">Thriller</option>
                 <option value="Crime">Crime</option>
-              <option value="Anime">Anime</option>
-
+                <option value="Anime">Anime</option>
               </select>
             </div>
 
@@ -326,7 +330,7 @@ const AdminPanel: React.FC = () => {
                 <option value="Amazon Prime">Amazon Prime</option>
                 <option value="Netflix">Netflix</option>
                 <option value="Jio Hotstar">Jio Hotstar</option>
-                <option value="Netherlands Zee5">Netflix Zee5</option>
+                <option value="Netflix Zee5">Netflix Zee5</option>
                 <option value="Netflix Amazon Prime">Netflix Amazon Prime</option>
               </select>
             </div>
@@ -369,7 +373,10 @@ const AdminPanel: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full mt-6 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 shadow-lg transform hover:scale-105"
+              disabled={isLoading} // Disable button when loading
+              className={`w-full mt-6 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 shadow-lg transform ${
+                isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:from-blue-600 hover:to-indigo-700 hover:scale-105'
+              }`}
             >
               {isEditMode ? 'Update Movie' : 'Add Movie'}
             </button>

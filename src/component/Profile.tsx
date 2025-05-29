@@ -26,6 +26,7 @@ const Profile: React.FC = () => {
   const [uploadMessage, setUploadMessage] = useState<string | null>(null);
   const [subscriptionMessage, setSubscriptionMessage] = useState<string | null>(null);
   const [currentPeriodEnd, setCurrentPeriodEnd] = useState<string | null>(null);
+  const [isAvatarLoading, setIsAvatarLoading] = useState<boolean>(false); // New state for avatar loading
   const boxRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -33,6 +34,7 @@ const Profile: React.FC = () => {
     const fetchUserData = async () => {
       // Start rotation animation immediately
       setIsRotating(true);
+      setIsAvatarLoading(true); // Start avatar loading
       setTimeout(() => {
         setIsRotating(false);
       }, 1000);
@@ -59,6 +61,8 @@ const Profile: React.FC = () => {
         } catch (error: any) {
           console.error('Error fetching profile picture:', error.message);
           toast.error(error.message || 'Failed to fetch profile picture');
+        } finally {
+          setIsAvatarLoading(false); // Stop avatar loading
         }
 
         // Fetch subscription status from API
@@ -100,6 +104,7 @@ const Profile: React.FC = () => {
 
     try {
       setUploadMessage(null);
+      setIsAvatarLoading(true); // Start avatar loading
       const response = await updateProfilePicture(file);
       setUploadMessage(response.message);
 
@@ -111,10 +116,11 @@ const Profile: React.FC = () => {
     } catch (error: any) {
       setUploadMessage(error.message || 'Failed to update profile picture');
       toast.error(error.message || 'Failed to update profile picture');
-    }
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+    } finally {
+      setIsAvatarLoading(false); // Stop avatar loading
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -210,14 +216,22 @@ const Profile: React.FC = () => {
             className="w-24 h-24 bg-gray-200 rounded-full overflow-hidden transition-transform duration-300 hover:scale-110 hover:shadow-lg cursor-pointer relative"
             onClick={handleAvatarClick}
           >
-            <img
-              src={user.avatar_url || defaultAvatarUrl}
-              alt={`${user.first_name}'s avatar`}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-              <span className="text-white text-xs font-medium">Change</span>
-            </div>
+            {isAvatarLoading ? (
+              <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                <div className="loader"></div> {/* Loader spinner */}
+              </div>
+            ) : (
+              <>
+                <img
+                  src={user.avatar_url || defaultAvatarUrl}
+                  alt={`${user.first_name}'s avatar`}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                  <span className="text-white text-xs font-medium">Change</span>
+                </div>
+              </>
+            )}
           </div>
           <input
             type="file"
@@ -323,6 +337,18 @@ const Profile: React.FC = () => {
           .animate-coinFlip {
             animation: coinFlip 1s cubic-bezier(0.4, 0, 0.2, 1);
             animation-fill-mode: forwards;
+          }
+          .loader {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #ffffff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+          }
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
           }
         `}</style>
       </div>

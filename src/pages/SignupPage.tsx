@@ -6,17 +6,14 @@ import {
   Paper,
   Box,
   Stack,
-  Divider,
   Dialog,
 } from '@mui/material';
 import { MdEmail, MdLock, MdPerson, MdPhone } from 'react-icons/md';
 import { signupUser } from '../services/Api';
-import { FaApple } from 'react-icons/fa';
-import { FcGoogle } from 'react-icons/fc';
-import throttle from 'lodash/throttle';
 import LoginLogo from '../assets/loginLogo.png';
 import toast, { Toaster } from 'react-hot-toast';
 import WhatsappOptIn from './WhatsappOptIn';
+import throttle from 'lodash/throttle';
 
 interface SignupState {
   firstName: string;
@@ -27,7 +24,8 @@ interface SignupState {
   mobile: string;
   countryCode: string;
   error: string | null;
-  showWhatsAppDialog: boolean; // New state for dialog visibility
+  showWhatsAppDialog: boolean;
+  isLoading: boolean; // New state for loading
 }
 
 class SignupPage extends Component<{}, SignupState> {
@@ -45,6 +43,7 @@ class SignupPage extends Component<{}, SignupState> {
       countryCode: '+91',
       error: null,
       showWhatsAppDialog: false,
+      isLoading: false, // Initialize loading state
     };
 
     if (process.env.NODE_ENV === 'test') {
@@ -88,6 +87,8 @@ class SignupPage extends Component<{}, SignupState> {
       return;
     }
 
+    this.setState({ isLoading: true }); // Set loading to true
+
     try {
       const signupData = {
         name: `${firstName} ${lastName}`.trim(),
@@ -103,7 +104,6 @@ class SignupPage extends Component<{}, SignupState> {
       if (response.user?.id) {
         localStorage.setItem('token', response.token);
         toast.success('Account created successfully!', { id: loadingToast });
-        // Show WhatsApp dialog instead of redirecting
         this.setState({ showWhatsAppDialog: true });
       } else {
         toast.error('Signup failed. Please try again.', { id: loadingToast });
@@ -112,25 +112,29 @@ class SignupPage extends Component<{}, SignupState> {
       const errorMessage = error.message || 'An error occurred during signup.';
       console.error('Signup error details:', error);
       toast.error(errorMessage);
+    } finally {
+      this.setState({ isLoading: false }); // Reset loading state
     }
   };
 
-  // Callback for WhatsappOptIn
   handleWhatsAppOptIn = () => {
     console.log('User attempted WhatsApp opt-in');
-    // Remove automatic closing of dialog
-    // The dialog will stay open until user clicks "Skip"
+    setTimeout(() => {
+      this.setState({ showWhatsAppDialog: false });
+      window.location.href = '/login';
+    }, 500);
+    toast.success('You will be redirected to login in 5 seconds...', {
+      duration: 400,
+    });
   };
 
-  // Update the handleDialogClose method to only close on "Skip"
   handleDialogClose = () => {
     this.setState({ showWhatsAppDialog: false });
-    // Navigate to login page
     window.location.href = '/login';
   };
 
   render() {
-    const { firstName, lastName, email, password, confirmPassword, mobile, error, showWhatsAppDialog } = this.state;
+    const { firstName, lastName, email, password, confirmPassword, mobile, error, showWhatsAppDialog, isLoading } = this.state;
 
     return (
       <Box
@@ -284,23 +288,9 @@ class SignupPage extends Component<{}, SignupState> {
                 transition: 'background-color 0.3s ease-in-out',
               }}
               onClick={this.throttledSignup}
+              disabled={isLoading} // Disable button when loading
             >
-              Sign Up
-            </Button>
-          </Stack>
-
-          <Divider sx={{ my: 3 }}>
-            <Typography variant="body2" color="textSecondary">
-              OR
-            </Typography>
-          </Divider>
-
-          <Stack spacing={1.5}>
-            <Button fullWidth variant="outlined" startIcon={<FcGoogle />} sx={{ textTransform: 'none' }}>
-              Continue with Google
-            </Button>
-            <Button fullWidth variant="outlined" startIcon={<FaApple />} sx={{ textTransform: 'none' }}>
-              Continue with Apple
+              {isLoading ? 'Signing Up...' : 'Sign Up'} 
             </Button>
           </Stack>
 

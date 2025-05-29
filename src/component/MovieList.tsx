@@ -150,13 +150,13 @@ const MovieList: React.FC<MovieListProps> = ({ movies, onMovieClick, onDeleteMov
 
       {/* Trending Now */}
       <section>
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">Trending Now</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">All Time Trending </h2>
         {trendingMovies.length > 0 ? <TrendingSwiper /> : <p className="text-gray-500">No trending movies available.</p>}
       </section>
 
       {/* All Time Favorites */}
       <section>
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">All Time Favorites</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">Top Rated</h2>
         {allTimeFavorites.length > 0 ? <TopSwiper /> : <p className="text-gray-500">No movies with rating 8.5 or higher available.</p>}
       </section>
 
