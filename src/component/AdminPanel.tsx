@@ -330,8 +330,8 @@ const AdminPanel: React.FC = () => {
                 <option value="Amazon Prime">Amazon Prime</option>
                 <option value="Netflix">Netflix</option>
                 <option value="Jio Hotstar">Jio Hotstar</option>
-                <option value="Netflix Zee5">Netflix Zee5</option>
-                <option value="Netflix Amazon Prime">Netflix Amazon Prime</option>
+                <option value="HBO">HBO</option>
+                <option value="HULU">HULU</option>
               </select>
             </div>
 

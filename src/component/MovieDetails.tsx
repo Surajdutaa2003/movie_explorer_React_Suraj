@@ -238,8 +238,8 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ onClose = () => { } }) => {
         animate="visible"
       >
         {loading ? (
-          <div className="flex items-center justify-center h-96">
-            <div className="loading-spinner"></div>
+          <div className="flex flex-col items-center justify-center h-96 gap-4">
+    <div className="loading-spinner"></div>
           </div>
         ) : error ? (
           <div className="p-6 text-center">

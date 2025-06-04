@@ -48,20 +48,20 @@
 
 /* Loading spinner */
 .loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid transparent; /* Changed from rgba color to transparent */
+  border-radius: 50%;
+  border-top-color: #1976d2;
   animation: spin 1s linear infinite;
-  border-radius: 9999px;
-  width: 3rem;
-  height: 3rem;
-  border: 2px solid transparent;
-  border-top-color: #3b82f6; /* blue-500 */
-  border-bottom-color: #3b82f6; /* blue-500 */
+  box-sizing: border-box; /* Added to ensure border is included in dimensions */
 }
 
-/* @keyframes spin {
+@keyframes spin {
   to {
     transform: rotate(360deg);
   }
-} */
+}
 
 /* Poster image container */
 .poster-container {

@@ -144,7 +144,7 @@ class SignupPage extends Component<{}, SignupState> {
         alignItems="center"
         justifyContent="center"
         px={2}
-        bgcolor="#EDEEF0"
+        bgcolor="#f5f5f2"
       >
         <Toaster position="top-right" />
         <Box display="flex" flexDirection="column" alignItems="center" mb={5}>

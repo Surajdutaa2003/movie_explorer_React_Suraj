@@ -8,10 +8,12 @@ import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import '../styles/Dashboard.css'; // Import the CSS file
+import '../styles/DashboardAnimations.css'; // Add this import
 import useDebounce from '../hooks/useDebounce';
 import { fetchMovies, setPage, setSearchQuery, setSelectedGenre } from '../redux/movieSlice';
 import { fetchSliderMovies } from '../redux/sliderSlice';
 import { RootState, AppDispatch } from '../redux/store';
+import ChatBot from './chatBot';
 
 interface MovieListProps {
   movies: Movie[];
@@ -25,6 +27,9 @@ const Dashboard: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [isContentVisible, setIsContentVisible] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+  const [showScrollArrow, setShowScrollArrow] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false); // Add initialization flag
   
   // Movie state from Redux
   const { 
@@ -58,11 +63,14 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      console.log('ScrollY:', currentScrollY, 'isContentVisible:', isContentVisible); // Debug log
+      setScrollY(currentScrollY);
+      
       if (currentScrollY > 50) {
         setIsContentVisible(true);
+        setShowScrollArrow(false);
       } else {
         setIsContentVisible(false);
+        setShowScrollArrow(true);
       }
     };
 
@@ -70,14 +78,27 @@ const Dashboard: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Add a new useEffect at the top with other useEffects
+  // Modified useEffect - only reset on first load, not on every mount
   useEffect(() => {
-    // Reset genre selection to default when Dashboard mounts
-    dispatch(setSelectedGenre(''));
-    
-    // Fetch movies with empty genre
-    dispatch(fetchMovies({ page, searchQuery: debouncedSearchQuery, genre: '' }));
-  }, []); // Empty dependency array means this runs once when component mounts
+    if (!isInitialized) {
+      // Only reset genre selection and fetch movies on initial load
+      // Check if we have any existing state, if not, reset to defaults
+      if (!selectedGenre || selectedGenre === 'Genre') {
+        dispatch(setSelectedGenre('All'));
+      }
+      
+      // Only fetch if we don't have movies or if it's truly the first load
+      if (movies.length === 0) {
+        dispatch(fetchMovies({ 
+          page: page || 1, 
+          searchQuery: debouncedSearchQuery, 
+          genre: selectedGenre === 'Genre' ? 'All' : selectedGenre 
+        }));
+      }
+      
+      setIsInitialized(true);
+    }
+  }, [isInitialized, dispatch, selectedGenre, movies.length, page, debouncedSearchQuery]);
 
   const openMovieDetail = (movie: Movie) => {
     setSelectedMovie(movie);
@@ -106,9 +127,46 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleScrollToContent = () => {
+    const contentElement = document.querySelector('main');
+    if (contentElement) {
+      contentElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white text-gray-900 font-sans">
-      <nav className={`fixed w-full top-0 z-50 bg-white shadow-lg border-b border-gray-200 p-4 flex items-center justify-between ${isContentVisible ? 'content-visible' : 'content-hidden'}`}>
+      {/* Static logo in banner */}
+      
+
+      {/* Animated scroll arrow */}
+      {showScrollArrow && (
+        <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50">
+          <button
+            onClick={handleScrollToContent}
+            className="group flex flex-col items-center animate-bounce cursor-pointer"
+            style={{
+              animation: 'bounce 2s infinite, wave 3s ease-in-out infinite'
+            }}
+          >
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-full p-4 border border-white border-opacity-30 group-hover:bg-opacity-30 transition-all duration-300">
+              <svg 
+                className="w-6 h-6 text-white group-hover:text-blue-200 transition-colors duration-300" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+            </div>
+            <span className="text-white text-sm mt-2 font-medium opacity-80 group-hover:opacity-100 transition-opacity duration-300">
+              Scroll to explore
+            </span>
+          </button>
+        </div>
+      )}
+
+      <nav className={`fixed w-full top-0 z-50 bg-white shadow-lg border-b border-gray-200 p-4 flex items-center justify-between transition-all duration-300 ${isContentVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}`}>
         <div className="flex items-center space-x-4">
           <span className="text-3xl font-extrabold text-blue-600">Movie Explor</span>
         </div>
@@ -171,7 +229,7 @@ const Dashboard: React.FC = () => {
       </nav>
 
       {menuOpen && isContentVisible && (
-        <div className="md:hidden fixed top-16 left-0 right-0 bg-white p-4 border-b border-gray-200 shadow-lg z-40 content-visible">
+        <div className="md:hidden fixed top-16 left-0 right-0 bg-white p-4 border-b border-gray-200 shadow-lg z-40">
           <div className="flex flex-col space-y-4">
             {userRole === 'supervisor' && (
               <Link to="/admin" className="text-sm font-medium text-gray-700 hover:text-blue-600" onClick={() => setMenuOpen(false)}>
@@ -221,8 +279,9 @@ const Dashboard: React.FC = () => {
         >
           {sliderLoading ? (
             <SwiperSlide>
-              <div className="flex items-center justify-center h-full">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+              <div className="flex flex-col items-center justify-center h-full gap-4">
+                <div className="film-reel"></div>
+                <p className="text-gray-600 font-medium animate-pulse">Loading Movies...</p>
               </div>
             </SwiperSlide>
           ) : sliderError ? (
@@ -257,9 +316,7 @@ const Dashboard: React.FC = () => {
         </Swiper>
       </div>
 
-
-
-      <main className={`pt-20 p-6 bg-gray-50 ${isContentVisible ? 'content-visible' : 'content-hidden'}`}>
+      <main className={`pt-20 p-6 bg-gray-50 transition-all duration-500 ${isContentVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         {successMessage && (
           <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">
             {successMessage}
@@ -294,15 +351,16 @@ const Dashboard: React.FC = () => {
 
         <div className="min-h-[400px] bg-white rounded-lg shadow-md p-4">
           {loading ? (
-            <div className="flex items-center justify-center h-96">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="flex flex-col items-center justify-center h-96 gap-4">
+              <div className="film-reel"></div>
+              <p className="text-gray-600 font-medium animate-pulse">Loading Movies...</p>
             </div>
           ) : error && !successMessage ? (
             <div className="text-red-500 text-center h-96 flex items-center justify-center">
               {error}
             </div>
           ) : (
-            <div className={`movie-list-container ${isContentVisible ? 'content-visible' : 'content-hidden'}`}>
+            <div className={`movie-list-container transition-all duration-500 ${isContentVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
               <MovieList 
                 movies={movies} 
                 onMovieClick={openMovieDetail} 
@@ -333,9 +391,10 @@ const Dashboard: React.FC = () => {
             </button>
           </div>
         )}
+        <ChatBot/>
       </main>
 
-      <footer className={`bg-gray-200 text-gray-600 p-6 text-center border-t border-gray-300 ${isContentVisible ? 'content-visible' : 'content-hidden'}`}>
+      <footer className={`bg-gray-200 text-gray-600 p-6 text-center border-t border-gray-300 transition-all duration-500 ${isContentVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         <p className="text-lg">© {new Date().getFullYear()} Movie+. All rights reserved.</p>
         <div className="mt-4 flex justify-center space-x-6 text-sm">
           <a href="#" className="text-gray-600 hover:text-blue-600">Privacy</a>
@@ -349,4 +408,3 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
-// ss

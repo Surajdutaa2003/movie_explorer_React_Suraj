@@ -23,7 +23,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onDeleteMovie, onMovieClic
   // Validate movie prop
   if (!movie || !movie.id || !movie.title) {
     return (
-      <div className="relative group overflow-hidden rounded-lg shadow-lg p-4 bg-red-50 text-red-700">
+      <div className="relative group overflow-hidden rounded-lg shadow-lg p-4 bg-red-50 text-red-700 m-2">
         Invalid movie data
       </div>
     );
@@ -47,8 +47,9 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onDeleteMovie, onMovieClic
 
       if (!token) {
         alert('Please log in to view movie details');
-        // use Settimeout to navigate to./home after 2 seconds
-        navigate('/home');
+        setTimeout(() => {
+          navigate('/home');
+        }, 2000);
         return;
       }
 
@@ -79,60 +80,64 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onDeleteMovie, onMovieClic
   };
 
   return (
-    <div className="relative group overflow-hidden rounded-lg shadow-lg transition-transform transform hover:scale-105 cursor-pointer"
+    <div
+      className="relative group overflow-hidden rounded-lg shadow-lg transition-all duration-300 hover:-translate-y-1 m-3"
       onClick={handleClick}
     >
       <img
         src={movie.poster_url || 'no movie'}
         alt={movie.title}
-        className="w-full h-[300px] object-cover"
+        className="w-full h-[300px] object-cover transition-transform duration-300 group-hover:scale-110"
       />
       
-      {/* Add Premium Tag */}
+      {/* Premium Tag */}
       {movie.premium && (
-        <div className="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded-full flex items-center space-x-1 z-10">
+        <div className="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded-full flex items-center space-x-1 z-10 absolute top-4">
           <WorkspacePremiumIcon sx={{ width: 16, height: 16 }} />
           <span className="text-sm font-medium">Premium</span>
         </div>
       )}
 
       {userRole === 'supervisor' && (
-        <div className="absolute top-2 right-2 flex space-x-2">
+        <div className="absolute top-2 right-2 flex space-x-2 z-20">
           <button
             className={`${
-              showButtons ? 'opacity-100' : 'opacity-0'
-            } md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 focus:outline-none z-10`}
+              showButtons ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+            } md:opacity-0 md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-300 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-400 hover:shadow-[0_0_10px_rgba(59,130,246,0.7)] focus:outline-none`}
             title="Edit Movie"
             onClick={handleEditClick}
           >
-            <EditIcon sx={{ width: 20, height: 20 }} />
+            <EditIcon sx={{ width: 24, height: 24 }} />
           </button>
           <button
             onClick={handleDeleteClick}
             className={`${
-              showButtons ? 'opacity-100' : 'opacity-0'
-            } md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 bg-red-600 text-white p-2 rounded-full hover:bg-red-700 focus:outline-none z-10`}
+              showButtons ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+            } md:opacity-0 md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-300 bg-red-500 text-white p-2 rounded-full hover:bg-red-400 hover:shadow-[0_0_10px_rgba(239,68,68,0.7)] focus:outline-none`}
             title="Delete Movie"
           >
-            <DeleteIcon sx={{ width: 20, height: 20 }} />
+            <DeleteIcon sx={{ width: 24, height: 24 }} />
           </button>
         </div>
       )}
-      <div className="absolute inset-0 bg-gray-900 bg-opacity-70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
-        <h3 className="text-white text-lg font-semibold">{movie.title}</h3>
-        <p className="text-gray-200 text-sm">{movie.genre || 'Unknown'}</p>
-        <div className="flex items-center justify-between">
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 z-10">
+        <h3 className="text-white text-lg font-semibold translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+          {movie.title}
+        </h3>
+        <p className="text-gray-200 text-sm translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-75">
+          {movie.genre || 'Unknown'}
+        </p>
+        <div className="flex items-center justify-between translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-100">
           <p className="text-yellow-300 text-sm">
             Rating: {parseFloat(movie.rating.toString()) ? parseFloat(movie.rating.toString()).toFixed(1) : 'N/A'}
           </p>
-          {/* {movie.premium && (
-            <span className="text-yellow-400 text-sm flex items-center">
-              <WorkspacePremiumIcon sx={{ width: 16, height: 16, marginRight: '4px' }} />
-              Premium
-            </span>
-          )} */}
         </div>
       </div>
+      <style>{`
+        .group:hover .absolute:not(.z-20) {
+          backdrop-filter: blur(1px);
+        }
+      `}</style>
     </div>
   );
 };

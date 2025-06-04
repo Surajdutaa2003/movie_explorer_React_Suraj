@@ -192,14 +192,14 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
     };
 
     return (
-      <Box
+      <Box 
         minHeight="100vh"
         display="flex"
         flexDirection="column"
         alignItems="center"
         justifyContent="center"
         px={2}
-        bgcolor="#EDEEF0"
+        bgcolor="#f5f5f2"  // Updated this line
       >
         <Toaster />
         <Box display="flex" flexDirection="column" alignItems="center" mb={5}>
@@ -227,7 +227,7 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
             width: "100%",
             maxWidth: 400,
             p: 3,
-            bgcolor: "#EDEEF0",
+            bgcolor: "#f5f5f5",  // Updated this line
             border: "1px solid rgba(0, 0, 0, 0.1)",
             boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
             borderRadius: 2,
@@ -315,3 +315,4 @@ class LoginPage extends Component<LoginPageProps, LoginPageState> {
 }
 
 export default withNavigate(LoginPage);
+// ss

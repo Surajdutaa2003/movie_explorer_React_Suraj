@@ -29,7 +29,7 @@ const plans: Plan[] = [
     popular: true,
   },
   {
-    id: '1_month',
+    id: 'premium',
     name: '1 Year Premium',
     price: '$19.99',
     features: [

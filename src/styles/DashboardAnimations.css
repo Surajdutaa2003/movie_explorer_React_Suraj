@@ -1,0 +1,71 @@
+@keyframes wave {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0px);
+  }
+  25% {
+    transform: translateX(-50%) translateY(-5px);
+  }
+  50% {
+    transform: translateX(-50%) translateY(0px);
+  }
+  75% {
+    transform: translateX(-50%) translateY(-3px);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  40%, 43% {
+    transform: translateX(-50%) translateY(-10px);
+  }
+  70% {
+    transform: translateX(-50%) translateY(-5px);
+  }
+  90% {
+    transform: translateX(-50%) translateY(-2px);
+  }
+}
+
+@keyframes filmReel {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.film-reel {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 4px solid #e2e8f0;
+  border-top-color: #3b82f6;
+  animation: filmReel 1s linear infinite;
+}
+
+.film-reel::before,
+.film-reel::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+.film-reel::before {
+  width: 66px;
+  height: 66px;
+  border: 4px dotted #3b82f6;
+}
+
+.film-reel::after {
+  width: 40px;
+  height: 40px;
+  background: #3b82f6;
+  opacity: 0.2;
+}

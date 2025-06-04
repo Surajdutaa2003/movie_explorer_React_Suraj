@@ -3,7 +3,8 @@ import { updateProfilePicture, getProfilePicture, cancelSubscription } from '../
 import { getSubscriptionStatus } from '../services/subApi';
 import { toast } from 'react-toastify';
 import CloseIcon from '@mui/icons-material/Close';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Add this import
 
 interface User {
   id: number;
@@ -26,15 +27,14 @@ const Profile: React.FC = () => {
   const [uploadMessage, setUploadMessage] = useState<string | null>(null);
   const [subscriptionMessage, setSubscriptionMessage] = useState<string | null>(null);
   const [currentPeriodEnd, setCurrentPeriodEnd] = useState<string | null>(null);
-  const [isAvatarLoading, setIsAvatarLoading] = useState<boolean>(false); // New state for avatar loading
+  const [isAvatarLoading, setIsAvatarLoading] = useState<boolean>(false);
   const boxRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      // Start rotation animation immediately
       setIsRotating(true);
-      setIsAvatarLoading(true); // Start avatar loading
+      setIsAvatarLoading(true);
       setTimeout(() => {
         setIsRotating(false);
       }, 1000);
@@ -49,7 +49,6 @@ const Profile: React.FC = () => {
           }
         }
 
-        // Fetch profile picture URL from API
         try {
           const response = await getProfilePicture();
           if (userData) {
@@ -62,10 +61,9 @@ const Profile: React.FC = () => {
           console.error('Error fetching profile picture:', error.message);
           toast.error(error.message || 'Failed to fetch profile picture');
         } finally {
-          setIsAvatarLoading(false); // Stop avatar loading
+          setIsAvatarLoading(false);
         }
 
-        // Fetch subscription status from API
         try {
           const subResponse = await getSubscriptionStatus();
           if (subResponse.current_period_end && userData) {
@@ -79,7 +77,6 @@ const Profile: React.FC = () => {
           }
         } catch (error: any) {
           console.error('Error fetching subscription status:', error.message);
-          // Error is already handled by toast in getSubscriptionStatus
         }
       } catch (error) {
         console.error('Error retrieving user from localStorage:', error);
@@ -104,7 +101,7 @@ const Profile: React.FC = () => {
 
     try {
       setUploadMessage(null);
-      setIsAvatarLoading(true); // Start avatar loading
+      setIsAvatarLoading(true);
       const response = await updateProfilePicture(file);
       setUploadMessage(response.message);
 
@@ -117,7 +114,7 @@ const Profile: React.FC = () => {
       setUploadMessage(error.message || 'Failed to update profile picture');
       toast.error(error.message || 'Failed to update profile picture');
     } finally {
-      setIsAvatarLoading(false); // Stop avatar loading
+      setIsAvatarLoading(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -147,11 +144,18 @@ const Profile: React.FC = () => {
   if (!user) {
     return (
       <div
-        className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
+        className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat relative"
         style={{
           backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${backgroundUrl})`,
         }}
       >
+        <button
+          onClick={handleGoBack}
+          className="absolute top-4 left-4 text-white hover:text-gray-300 transition transform hover:scale-105"
+          title="Sign Out"
+        >
+          <ExitToAppIcon sx={{ width: 32, height: 32 }} />
+        </button>
         <div
           ref={boxRef}
           className={`text-center p-8 rounded-lg shadow-2xl ${isRotating ? 'animate-coinFlip' : ''}`}
@@ -165,40 +169,41 @@ const Profile: React.FC = () => {
         >
           <h2 className="text-2xl font-semibold text-white mb-3">No Profile Found</h2>
           <p className="text-gray-200 mb-4">Please log in to view your profile.</p>
-          <button
-            onClick={handleGoBack}
-            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition transform hover:scale-105 hover:shadow-lg text-sm"
-          >
-            Go Back Home
-          </button>
-          <style>{`
-            @keyframes coinFlip {
-              0% {
-                transform: perspective(1000px) rotateY(0deg);
-                opacity: 0.8;
-              }
-              100% {
-                transform: perspective(1000px) rotateY(360deg);
-                opacity: 1;
-              }
-            }
-            .animate-coinFlip {
-              animation: coinFlip 1s cubic-bezier(0.4, 0, 0.2, 1);
-              animation-fill-mode: forwards;
-            }
-          `}</style>
         </div>
+        <style>{`
+          @keyframes coinFlip {
+            0% {
+              transform: perspective(1000px) rotateY(0deg);
+              opacity: 0.8;
+            }
+            100% {
+              transform: perspective(1000px) rotateY(360deg);
+              opacity: 1;
+            }
+          }
+          .animate-coinFlip {
+            animation: coinFlip 1s cubic-bezier(0.4, 0, 0.2, 1);
+            animation-fill-mode: forwards;
+          }
+        `}</style>
       </div>
     );
   }
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
+      className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat relative"
       style={{
         backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${backgroundUrl})`,
       }}
     >
+      <button
+        onClick={handleGoBack}
+        className="absolute top-4 left-4 text-white hover:text-gray-300 transition transform hover:scale-105"
+        title="Go Back"
+      >
+        <ArrowBackIcon sx={{ width: 32, height: 32 }} />
+      </button>
       <div
         ref={boxRef}
         className={`w-full max-w-md rounded-lg shadow-2xl p-6 relative ${isRotating ? 'animate-coinFlip' : ''}`}
@@ -218,7 +223,7 @@ const Profile: React.FC = () => {
           >
             {isAvatarLoading ? (
               <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                <div className="loader"></div> {/* Loader spinner */}
+                <div className="loader"></div>
               </div>
             ) : (
               <>
@@ -295,7 +300,7 @@ const Profile: React.FC = () => {
           </div>
           {currentPeriodEnd && user.role !== 'supervisor' && (
             <div className="flex justify-between items-center">
-              <label className="text-gray-300 text-sm w-1/3">SUBSCRIPTION ENDS</label>
+              <label className="text-gray-300 text-sm w-1/3 relative right-2">SUBSCRIPTION ENDS</label>
               <input
                 type="text"
                 value={new Date(currentPeriodEnd).toLocaleString()}
@@ -305,24 +310,17 @@ const Profile: React.FC = () => {
             </div>
           )}
         </div>
-        <div className="flex space-x-4 mt-6">
-          {user.role !== 'supervisor' && (
+        {user.role !== 'supervisor' && (
+          <div className="mt-6 flex justify-center">
             <button
               onClick={handleCancelSubscription}
-              className="flex-1 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2"
+              className="w-2/3 p-2 bg-red-500 text-white rounded hover:bg-red-600 transition transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2"
             >
               <CloseIcon sx={{ width: 20, height: 20 }} />
               <span>Cancel Subscription</span>
             </button>
-          )}
-          <button
-            onClick={handleGoBack}
-            className="flex-1 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition transform hover:scale-105 hover:shadow-lg text-sm flex items-center justify-center space-x-2"
-          >
-            <ArrowBackIcon sx={{ width: 16, height: 16 }} />
-            <span>Go Back</span>
-          </button>
-        </div>
+          </div>
+        )}
         <style>{`
           @keyframes coinFlip {
             0% {

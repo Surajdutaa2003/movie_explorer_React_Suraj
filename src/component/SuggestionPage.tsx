@@ -6,6 +6,7 @@ import { fetchMovies, setSelectedGenre } from '../redux/movieSlice';
 import { RootState, AppDispatch } from '../redux/store';
 import MovieList from './MovieList';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import '../styles/DashboardAnimations.css';
 
 interface MoodMap {
   [key: string]: string;
@@ -40,16 +41,45 @@ function useDebounce<T>(value: T, delay: number): T {
 }
 
 const SuggestionPage: React.FC = () => {
-  const [selectedMood, setSelectedMood] = useState<string>('');
-  const [moodInput, setMoodInput] = useState<string>('');
+  // Initialize state from sessionStorage or localStorage to persist across navigation
+  const getInitialMood = () => {
+    const savedMood = sessionStorage.getItem('selectedMood');
+    return savedMood || '';
+  };
+
+  const getInitialMoodInput = () => {
+    const savedMoodInput = sessionStorage.getItem('moodInput');
+    return savedMoodInput || '';
+  };
+
+  const [selectedMood, setSelectedMood] = useState<string>(getInitialMood);
+  const [moodInput, setMoodInput] = useState<string>(getInitialMoodInput);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const { movies, loading, error, page } = useSelector((state: RootState) => state.movies);
+  const { movies, loading, error, page, selectedGenre } = useSelector((state: RootState) => state.movies);
 
   // Debounce the mood input with a 3-second delay
   const debouncedMoodInput = useDebounce(moodInput, 3000);
 
+  // Save state to sessionStorage whenever it changes
+  useEffect(() => {
+    if (selectedMood) {
+      sessionStorage.setItem('selectedMood', selectedMood);
+    } else {
+      sessionStorage.removeItem('selectedMood');
+    }
+  }, [selectedMood]);
+
+  useEffect(() => {
+    if (moodInput) {
+      sessionStorage.setItem('moodInput', moodInput);
+    } else {
+      sessionStorage.removeItem('moodInput');
+    }
+  }, [moodInput]);
+
+  // Handle mood input changes and matching
   useEffect(() => {
     if (debouncedMoodInput) {
       const inputLower = debouncedMoodInput.toLowerCase();
@@ -67,6 +97,7 @@ const SuggestionPage: React.FC = () => {
     }
   }, [debouncedMoodInput]);
 
+  // Fetch movies when mood changes or on component mount
   useEffect(() => {
     if (selectedMood) {
       const genre = moodToGenreMap[selectedMood];
@@ -75,14 +106,39 @@ const SuggestionPage: React.FC = () => {
     }
   }, [dispatch, selectedMood, page]);
 
+  // On component mount, if we have a selected mood but no movies, refetch
+  useEffect(() => {
+    if (selectedMood && movies.length === 0 && !loading) {
+      const genre = moodToGenreMap[selectedMood];
+      dispatch(setSelectedGenre(genre));
+      dispatch(fetchMovies({ page, searchQuery: '', genre }));
+    }
+  }, []); // Empty dependency array means this runs only on mount
+
   const handleMoodInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMoodInput(e.target.value);
+  };
+
+  const handleMoodButtonClick = (mood: string) => {
+    setSelectedMood(mood);
+    setMoodInput(mood);
+  };
+
+  const handleMovieClick = (movie: any) => {
+    // Store current state before navigation
+    sessionStorage.setItem('selectedMood', selectedMood);
+    sessionStorage.setItem('moodInput', moodInput);
+    
+    const navigationState = { fromSuggestions: true };
+    console.log('Navigating from suggestions with state:', navigationState);
+    localStorage.setItem('fromSuggestions', 'true');
+    navigate(`/movie/${movie.id}`);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-12 px-4">
       <div className="max-w-4xl mx-auto">
-        {/* Add this button at the top */}
+        {/* Back button */}
         <motion.button
           onClick={() => navigate('/')}
           whileHover={{ scale: 1.05 }}
@@ -118,10 +174,7 @@ const SuggestionPage: React.FC = () => {
               key={mood}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                setSelectedMood(mood);
-                setMoodInput(mood); // Update input to reflect selected mood
-              }}
+              onClick={() => handleMoodButtonClick(mood)}
               className={`p-4 rounded-lg shadow-md transition-colors duration-300 ${selectedMood === mood
                 ? 'bg-blue-500 text-white'
                 : 'bg-white hover:bg-blue-50'
@@ -138,8 +191,11 @@ const SuggestionPage: React.FC = () => {
         </div>
 
         {loading ? (
-          <div className="flex justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          <div className="flex flex-col items-center justify-center h-96 gap-4">
+            <div className="film-reel"></div>
+            <p className="text-gray-600 font-medium animate-pulse">
+              Finding movies for your {selectedMood.toLowerCase()} mood...
+            </p>
           </div>
         ) : error ? (
           <div className="text-red-500 text-center">{error}</div>
@@ -150,18 +206,7 @@ const SuggestionPage: React.FC = () => {
             </h2>
             <MovieList
               movies={movies}
-              onMovieClick={(movie) => {
-                // console.log('Navigating to movie details with state:', { from: 'suggestions' });
-                // // navigate(`/movieDetails/${movie.id}`, { state: { from: 'suggestions' } });
-                // navigate(`/movieDetails/${movie.id}`, {
-                //   state: { fromSuggestions: true }  // Changed from { from: 'suggestions' }
-                // });
-
-                const navigationState = { fromSuggestions: true };
-                console.log('Navigating from suggestions with state:', navigationState);
-                localStorage.setItem('fromSuggestions', 'true')
-                navigate(`/movie/${movie.id}`);
-              }}
+              onMovieClick={handleMovieClick}
             />
           </div>
         ) : selectedMood && (
