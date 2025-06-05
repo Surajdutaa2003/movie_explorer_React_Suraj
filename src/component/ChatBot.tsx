@@ -1,8 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Paper, IconButton, TextField, Box } from '@mui/material';
+import { Paper, IconButton, TextField, Box, CircularProgress, Tooltip } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ChatIcon from '@mui/icons-material/Chat';
 import SendIcon from '@mui/icons-material/Send';
+import MicIcon from '@mui/icons-material/Mic';
+import MicOffIcon from '@mui/icons-material/MicOff';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
+import { getChatResponse, listenForVoiceInput } from '../services/chatApi';
 
 interface Message {
   text: string;
@@ -16,6 +21,9 @@ const ChatBot: React.FC = () => {
     { text: "Hi! I'm MovieBot. How can I help you today?", isBot: true, timestamp: new Date() }
   ]);
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [useVoice, setUseVoice] = useState(true);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -26,46 +34,51 @@ const ChatBot: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  const handleVoiceInput = async () => {
+    try {
+      setIsListening(true);
+      const transcript = await listenForVoiceInput();
+      setInput(transcript);
+      handleSend(transcript);
+    } catch (error) {
+      console.error('Voice input error:', error);
+    } finally {
+      setIsListening(false);
+    }
+  };
 
-    // Add user message
+  const handleSend = async (voiceInput?: string) => {
+    const messageText = voiceInput || input;
+    if (!messageText.trim() || isLoading) return;
+
     const userMessage: Message = {
-      text: input,
+      text: messageText,
       isBot: false,
       timestamp: new Date()
     };
 
     setMessages(prev => [...prev, userMessage]);
     setInput('');
+    setIsLoading(true);
 
-    // Simulate bot response
-    setTimeout(() => {
+    try {
+      const response = await getChatResponse(messageText, useVoice);
       const botResponse: Message = {
-        text: getBotResponse(input),
+        text: response,
         isBot: true,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, botResponse]);
-    }, 1000);
-  };
-
-  const getBotResponse = (userInput: string): string => {
-    const input = userInput.toLowerCase();
-    
-    if (input.includes('hello') || input.includes('hi')) {
-      return "Hello! How can I help you with movies today?";
+    } catch (error) {
+      const errorMessage: Message = {
+        text: "Sorry, I'm having trouble connecting right now. Please try again later.",
+        isBot: true,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
     }
-    if (input.includes('movie') && input.includes('recommend')) {
-      return "I'd be happy to recommend some movies! What genre do you prefer?";
-    }
-    if (input.includes('subscription')) {
-      return "You can check our subscription plans in the pricing page. Would you like me to direct you there?";
-    }
-    if (input.includes('genre')) {
-      return "We have various genres including Action, Comedy, Drama, Horror, and more. Which one interests you?";
-    }
-    return "I'm still learning! For specific movie recommendations, try using our search feature or mood-based suggestions.";
   };
 
   return (
@@ -153,12 +166,29 @@ const ChatBot: React.FC = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Type a message..."
+              placeholder={isListening ? 'Listening...' : 'Type or speak a message...'}
+              disabled={isLoading || isListening}
               InputProps={{
                 endAdornment: (
-                  <IconButton onClick={handleSend}>
-                    <SendIcon />
-                  </IconButton>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Tooltip title={useVoice ? "Turn off voice response" : "Turn on voice response"}>
+                      <IconButton onClick={() => setUseVoice(!useVoice)}>
+                        {useVoice ? <VolumeUpIcon /> : <VolumeOffIcon />}
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title={isListening ? "Stop listening" : "Start speaking"}>
+                      <IconButton 
+                        onClick={handleVoiceInput}
+                        disabled={isLoading}
+                        sx={{ color: isListening ? '#ef4444' : 'inherit' }}
+                      >
+                        {isListening ? <MicOffIcon /> : <MicIcon />}
+                      </IconButton>
+                    </Tooltip>
+                    <IconButton onClick={() => handleSend()} disabled={isLoading || isListening}>
+                      {isLoading ? <CircularProgress size={24} /> : <SendIcon />}
+                    </IconButton>
+                  </Box>
                 ),
               }}
             />
@@ -170,3 +200,5 @@ const ChatBot: React.FC = () => {
 };
 
 export default ChatBot;
+
+
