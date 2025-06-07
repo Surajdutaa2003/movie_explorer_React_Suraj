@@ -193,3 +193,4 @@ const MovieList: React.FC<MovieListProps> = ({ movies, onMovieClick, onDeleteMov
 };
 
 export default MovieList;
+// ss

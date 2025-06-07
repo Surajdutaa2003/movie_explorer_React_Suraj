@@ -56,12 +56,13 @@ const AdminPanel: React.FC = () => {
   const [formData, setFormData] = useState<MovieFormData>(initialFormData);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false); // New state for loading
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const isEditMode = !!movie;
 
   useEffect(() => {
     setFormData(initialFormData);
-    window.scrollTo(0, 0); // Scroll to top when component mounts or location.state changes
+    window.scrollTo(0, 0);
   }, [location.state]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -87,9 +88,17 @@ const AdminPanel: React.FC = () => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
-    setIsLoading(true); // Disable button
+    setIsLoading(true);
 
-    const loadingToast = toast.loading(isEditMode ? 'Updating movie...' : 'Adding movie...');
+    const loadingToast = toast.loading(isEditMode ? 'Updating movie...' : 'Adding movie...', {
+      style: {
+        padding: '8px 16px',
+        background: 'transparent',
+        border: '1px solid #3B82F6',
+        color: '#1F2937',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      },
+    });
 
     try {
       const requiredFields: (keyof MovieFormData)[] = [
@@ -123,11 +132,29 @@ const AdminPanel: React.FC = () => {
 
       if (isEditMode && movie) {
         const response = await updateMovie(movie.id, movieData);
-        toast.success('Movie updated successfully!', { id: loadingToast });
+        toast.success('Movie updated successfully!', { 
+          id: loadingToast,
+          style: {
+            padding: '8px 16px',
+            background: 'transparent',
+            border: '1px solid #10B981',
+            color: '#1F2937',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          },
+        });
         navigate('/');
       } else {
         const response = await createMovie(movieData);
-        toast.success('Movie added successfully!', { id: loadingToast });
+        toast.success('Movie added successfully!', { 
+          id: loadingToast,
+          style: {
+            padding: '8px 16px',
+            background: 'transparent',
+            border: '1px solid #10B981',
+            color: '#1F2937',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          },
+        });
         setFormData({
           title: '',
           genre: '',
@@ -145,13 +172,31 @@ const AdminPanel: React.FC = () => {
       }
     } catch (err: any) {
       if (err.message.includes('Session expired') || err.message.includes('Unauthorized')) {
-        toast.error('Your session has expired. Please log in again.', { id: loadingToast });
+        toast.error('Your session has expired. Please log in again.', { 
+          id: loadingToast,
+          style: {
+            padding: '8px 16px',
+            background: 'transparent',
+            border: '1px solid #EF4444',
+            color: '#1F2937',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          },
+        });
         navigate('/login');
       } else {
-        toast.error(err.message || `Failed to ${isEditMode ? 'update' : 'add'} movie.`, { id: loadingToast });
+        toast.error(err.message || `Failed to ${isEditMode ? 'update' : 'add'} movie.`, { 
+          id: loadingToast,
+          style: {
+            padding: '8px 16px',
+            background: 'transparent',
+            border: '1px solid #EF4444',
+            color: '#1F2937',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          },
+        });
       }
     } finally {
-      setIsLoading(false); // Re-enable button
+      setIsLoading(false);
     }
   };
 
@@ -189,7 +234,7 @@ const AdminPanel: React.FC = () => {
           )}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="title" className="block text-sm font-semibold text-gray-700">Movie Title *</label>
+              <label htmlFor="title" className="block text-sm font-semibold text-gray-700">Movie Title</label>
               <input
                 type="text"
                 id="title"
@@ -203,7 +248,7 @@ const AdminPanel: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="genre" className="block text-sm font-semibold text-gray-700">Genre *</label>
+              <label htmlFor="genre" className="block text-sm font-semibold text-gray-700">Genre</label>
               <select
                 id="genre"
                 name="genre"
@@ -226,7 +271,7 @@ const AdminPanel: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="release_year" className="block text-sm font-semibold text-gray-700">Release Year *</label>
+              <label htmlFor="release_year" className="block text-sm font-semibold text-gray-700">Release Year</label>
               <input
                 type="number"
                 id="release_year"
@@ -242,7 +287,7 @@ const AdminPanel: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="rating" className="block text-sm font-semibold text-gray-700">Rating (0-10) *</label>
+              <label htmlFor="rating" className="block text-sm font-semibold text-gray-700">Rating (0-10)</label>
               <input
                 type="number"
                 id="rating"
@@ -259,7 +304,7 @@ const AdminPanel: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="director" className="block text-sm font-semibold text-gray-700">Director *</label>
+              <label htmlFor="director" className="block text-sm font-semibold text-gray-700">Director</label>
               <input
                 type="text"
                 id="director"
@@ -273,7 +318,7 @@ const AdminPanel: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="duration" className="block text-sm font-semibold text-gray-700">Duration (minutes) *</label>
+              <label htmlFor="duration" className="block text-sm font-semibold text-gray-700">Duration (minutes)</label>
               <input
                 type="number"
                 id="duration"
@@ -288,7 +333,7 @@ const AdminPanel: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-sm font-semibold text-gray-700">Description (max 1000 characters) *</label>
+              <label htmlFor="description" className="block text-sm font-semibold text-gray-700">Description (max 1000 characters)</label>
               <textarea
                 id="description"
                 name="description"
@@ -303,7 +348,7 @@ const AdminPanel: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="main_lead" className="block text-sm font-semibold text-gray-700">Main Lead *</label>
+              <label htmlFor="main_lead" className="block text-sm font-semibold text-gray-700">Main Lead</label>
               <input
                 type="text"
                 id="main_lead"
@@ -317,7 +362,7 @@ const AdminPanel: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="streaming_platform" className="block text-sm font-semibold text-gray-700">Streaming Platform *</label>
+              <label htmlFor="streaming_platform" className="block text-sm font-semibold text-gray-700">Streaming Platform</label>
               <select
                 id="streaming_platform"
                 name="streaming_platform"
@@ -336,7 +381,7 @@ const AdminPanel: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="premium" className="block text-sm font-semibold text-gray-700">Premium Content *</label>
+              <label htmlFor="premium" className="block text-sm font-semibold text-gray-700">Premium Content</label>
               <input
                 type="checkbox"
                 id="premium"
@@ -373,7 +418,7 @@ const AdminPanel: React.FC = () => {
 
             <button
               type="submit"
-              disabled={isLoading} // Disable button when loading
+              disabled={isLoading}
               className={`w-full mt-6 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 shadow-lg transform ${
                 isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:from-blue-600 hover:to-indigo-700 hover:scale-105'
               }`}

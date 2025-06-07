@@ -81,61 +81,121 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onDeleteMovie, onMovieClic
 
   return (
     <div
-      className="relative group overflow-hidden rounded-lg shadow-lg transition-all duration-300 hover:-translate-y-1 m-3"
+      className="relative group overflow-hidden rounded-lg shadow-lg transition-all duration-300 hover:-translate-y-1 
+                 m-2 sm:m-3 
+                 w-full max-w-xs sm:max-w-sm mx-auto
+                 cursor-pointer"
       onClick={handleClick}
     >
       <img
         src={movie.poster_url || 'no movie'}
         alt={movie.title}
-        className="w-full h-[300px] object-cover transition-transform duration-300 group-hover:scale-110"
+        className="w-full h-[250px] sm:h-[300px] md:h-[350px] object-cover 
+                   transition-transform duration-300 group-hover:scale-110"
       />
       
       {/* Premium Tag */}
       {movie.premium && (
-        <div className="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded-full flex items-center space-x-1 z-10 absolute top-4">
-          <WorkspacePremiumIcon sx={{ width: 16, height: 16 }} />
-          <span className="text-sm font-medium">Premium</span>
+        <div className="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded-full 
+                       flex items-center space-x-1 z-10 text-xs sm:text-sm">
+          <WorkspacePremiumIcon sx={{ width: 14, height: 14 }} className="sm:w-4 sm:h-4" />
+          <span className="font-medium">Premium</span>
         </div>
       )}
 
+      {/* Action Buttons for Supervisors */}
       {userRole === 'supervisor' && (
-        <div className="absolute top-2 right-2 flex space-x-2 z-20">
+        <div className="absolute top-2 right-2 flex space-x-1 sm:space-x-2 z-20">
           <button
             className={`${
               showButtons ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-            } md:opacity-0 md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-300 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-400 hover:shadow-[0_0_10px_rgba(59,130,246,0.7)] focus:outline-none`}
+            } md:opacity-0 md:group-hover:opacity-100 md:group-hover:translate-y-0 
+            transition-all duration-300 bg-blue-500 text-white p-1.5 sm:p-2 rounded-full 
+            hover:bg-blue-400 hover:shadow-[0_0_10px_rgba(59,130,246,0.7)] 
+            focus:outline-none active:scale-95 touch-manipulation`}
             title="Edit Movie"
             onClick={handleEditClick}
           >
-            <EditIcon sx={{ width: 24, height: 24 }} />
+            <EditIcon sx={{ width: 18, height: 18 }} className="sm:w-6 sm:h-6" />
           </button>
           <button
             onClick={handleDeleteClick}
             className={`${
               showButtons ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-            } md:opacity-0 md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-300 bg-red-500 text-white p-2 rounded-full hover:bg-red-400 hover:shadow-[0_0_10px_rgba(239,68,68,0.7)] focus:outline-none`}
+            } md:opacity-0 md:group-hover:opacity-100 md:group-hover:translate-y-0 
+            transition-all duration-300 bg-red-500 text-white p-1.5 sm:p-2 rounded-full 
+            hover:bg-red-400 hover:shadow-[0_0_10px_rgba(239,68,68,0.7)] 
+            focus:outline-none active:scale-95 touch-manipulation`}
             title="Delete Movie"
           >
-            <DeleteIcon sx={{ width: 24, height: 24 }} />
+            <DeleteIcon sx={{ width: 18, height: 18 }} className="sm:w-6 sm:h-6" />
           </button>
         </div>
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 z-10">
-        <h3 className="text-white text-lg font-semibold translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+
+      {/* Overlay with Movie Details */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent 
+                     opacity-0 group-hover:opacity-100 transition-opacity duration-300 
+                     flex flex-col justify-end p-3 sm:p-4 z-10
+                     touch-none pointer-events-none group-hover:pointer-events-auto">
+        <h3 className="text-white text-base sm:text-lg font-semibold 
+                      translate-y-2 group-hover:translate-y-0 transition-transform duration-300
+                      line-clamp-2 leading-tight">
           {movie.title}
         </h3>
-        <p className="text-gray-200 text-sm translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-75">
+        <p className="text-gray-200 text-xs sm:text-sm 
+                     translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-75
+                     line-clamp-1 mt-1">
           {movie.genre || 'Unknown'}
         </p>
-        <div className="flex items-center justify-between translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-100">
-          <p className="text-yellow-300 text-sm">
-            Rating: {parseFloat(movie.rating.toString()) ? parseFloat(movie.rating.toString()).toFixed(1) : 'N/A'}
+        <div className="flex items-center justify-between 
+                       translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-100
+                       mt-2">
+          <p className="text-yellow-300 text-xs sm:text-sm font-medium">
+            ⭐ {parseFloat(movie.rating.toString()) ? parseFloat(movie.rating.toString()).toFixed(1) : 'N/A'}
           </p>
         </div>
       </div>
+
+      {/* Mobile-specific tap indicator */}
+      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 
+                     sm:hidden opacity-60 pointer-events-none z-10">
+        <div className="bg-black/50 text-white text-xs px-2 py-1 rounded-full">
+          Double tap to view
+        </div>
+      </div>
+
       <style>{`
         .group:hover .absolute:not(.z-20) {
           backdrop-filter: blur(1px);
+        }
+        
+        /* Enhanced touch targets for mobile */
+        @media (max-width: 640px) {
+          .group {
+            min-height: 250px;
+          }
+          
+          /* Ensure buttons are large enough for touch */
+          button {
+            min-width: 36px;
+            min-height: 36px;
+          }
+        }
+        
+        /* Line clamp utilities */
+        .line-clamp-1 {
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
         }
       `}</style>
     </div>

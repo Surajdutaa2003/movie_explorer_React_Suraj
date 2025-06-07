@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { updateProfilePicture, getProfilePicture, cancelSubscription } from '../services/Api';
 import { getSubscriptionStatus } from '../services/subApi';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import CloseIcon from '@mui/icons-material/Close';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Add this import
@@ -24,10 +25,8 @@ const backgroundUrl = 'https://i.pinimg.com/736x/00/21/a2/0021a2a1d7b1446a163b00
 const Profile: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isRotating, setIsRotating] = useState(false);
-  const [uploadMessage, setUploadMessage] = useState<string | null>(null);
-  const [subscriptionMessage, setSubscriptionMessage] = useState<string | null>(null);
-  const [currentPeriodEnd, setCurrentPeriodEnd] = useState<string | null>(null);
   const [isAvatarLoading, setIsAvatarLoading] = useState<boolean>(false);
+  const [currentPeriodEnd, setCurrentPeriodEnd] = useState<string | null>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -99,20 +98,30 @@ const Profile: React.FC = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    const loadingToast = toast.loading('Updating profile picture...');
     try {
-      setUploadMessage(null);
       setIsAvatarLoading(true);
       const response = await updateProfilePicture(file);
-      setUploadMessage(response.message);
-
+      
       if (user) {
         const updatedUser = { ...user, avatar_url: response.profile_picture_url };
         setUser(updatedUser);
         localStorage.setItem('user', JSON.stringify(updatedUser));
       }
+      
+      toast.update(loadingToast, {
+        render: response.message,
+        type: 'success',
+        isLoading: false,
+        autoClose: 3000
+      });
     } catch (error: any) {
-      setUploadMessage(error.message || 'Failed to update profile picture');
-      toast.error(error.message || 'Failed to update profile picture');
+      toast.update(loadingToast, {
+        render: error.message || 'Failed to update profile picture',
+        type: 'error',
+        isLoading: false,
+        autoClose: 3000
+      });
     } finally {
       setIsAvatarLoading(false);
       if (fileInputRef.current) {
@@ -122,20 +131,29 @@ const Profile: React.FC = () => {
   };
 
   const handleCancelSubscription = async () => {
+    const loadingToast = toast.loading('Cancelling subscription...');
     try {
-      setSubscriptionMessage(null);
       const response = await cancelSubscription();
-      setSubscriptionMessage(response.message);
       if (user && user.role !== 'supervisor') {
         setCurrentPeriodEnd(response.current_period_end);
         const updatedUser = { ...user, current_period_end: response.current_period_end };
         setUser(updatedUser);
         localStorage.setItem('user', JSON.stringify(updatedUser));
       }
-      toast.success(response.message);
+      
+      toast.update(loadingToast, {
+        render: response.message,
+        type: 'success',
+        isLoading: false,
+        autoClose: 3000
+      });
     } catch (error: any) {
-      setSubscriptionMessage(error.message || 'Failed to cancel subscription');
-      toast.error(error.message || 'Failed to cancel subscription');
+      toast.update(loadingToast, {
+        render: error.message || 'Failed to cancel subscription',
+        type: 'error',
+        isLoading: false,
+        autoClose: 3000
+      });
     }
   };
 
@@ -197,6 +215,18 @@ const Profile: React.FC = () => {
         backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${backgroundUrl})`,
       }}
     >
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <button
         onClick={handleGoBack}
         className="absolute top-4 left-4 text-white hover:text-gray-300 transition transform hover:scale-105"
@@ -252,24 +282,6 @@ const Profile: React.FC = () => {
             <span className="text-sm text-gray-300 capitalize">{user.role}</span>
           </div>
         </div>
-        {uploadMessage && (
-          <div
-            className={`mt-4 p-2 rounded text-center ${
-              uploadMessage.includes('Failed') ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
-            }`}
-          >
-            {uploadMessage}
-          </div>
-        )}
-        {subscriptionMessage && user.role !== 'supervisor' && (
-          <div
-            className={`mt-4 p-2 rounded text-center ${
-              subscriptionMessage.includes('Failed') ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
-            }`}
-          >
-            {subscriptionMessage}
-          </div>
-        )}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <label className="text-gray-300 text-sm w-1/3">NAME</label>

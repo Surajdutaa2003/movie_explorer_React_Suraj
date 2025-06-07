@@ -25,7 +25,7 @@ interface SignupState {
   countryCode: string;
   error: string | null;
   showWhatsAppDialog: boolean;
-  isLoading: boolean; // New state for loading
+  isLoading: boolean;
 }
 
 class SignupPage extends Component<{}, SignupState> {
@@ -43,7 +43,7 @@ class SignupPage extends Component<{}, SignupState> {
       countryCode: '+91',
       error: null,
       showWhatsAppDialog: false,
-      isLoading: false, // Initialize loading state
+      isLoading: false,
     };
 
     if (process.env.NODE_ENV === 'test') {
@@ -62,32 +62,72 @@ class SignupPage extends Component<{}, SignupState> {
     const { firstName, lastName, email, password, confirmPassword, mobile } = this.state;
 
     if (!firstName || !lastName || !email || !password || !confirmPassword || !mobile) {
-      toast.error('Please fill all fields');
+      toast.error('Please fill all fields', {
+        style: {
+          padding: '8px 16px',
+          background: 'transparent',
+          border: '1px solid #EF4444',
+          color: '#1F2937',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        },
+      });
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      toast.error('Please enter a valid email address');
+      toast.error('Please enter a valid email address', {
+        style: {
+          padding: '8px 16px',
+          background: 'transparent',
+          border: '1px solid #EF4444',
+          color: '#1F2937',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        },
+      });
       return;
     }
 
     if (password.length < 8) {
-      toast.error('Password must be at least 8 characters long');
+      toast.error('Password must be at least 8 characters long', {
+        style: {
+          padding: '8px 16px',
+          background: 'transparent',
+          border: '1px solid #EF4444',
+          color: '#1F2937',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        },
+      });
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error('Passwords do not match', {
+        style: {
+          padding: '8px 16px',
+          background: 'transparent',
+          border: '1px solid #EF4444',
+          color: '#1F2937',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        },
+      });
       return;
     }
 
     if (mobile.length !== 10 || !/^\d+$/.test(mobile)) {
-      toast.error('Please enter a valid 10-digit mobile number');
+      toast.error('Please enter a valid 10-digit mobile number', {
+        style: {
+          padding: '8px 16px',
+          background: 'transparent',
+          border: '1px solid #EF4444',
+          color: '#1F2937',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        },
+      });
       return;
     }
 
-    this.setState({ isLoading: true }); // Set loading to true
+    this.setState({ isLoading: true });
 
     try {
       const signupData = {
@@ -97,23 +137,57 @@ class SignupPage extends Component<{}, SignupState> {
         password,
       };
 
-      const loadingToast = toast.loading('Creating your account...');
+      const loadingToast = toast.loading('Creating your account...', {
+        style: {
+          padding: '8px 16px',
+          background: 'transparent',
+          border: '1px solid #3B82F6',
+          color: '#1F2937',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        },
+      });
 
       const response = await signupUser(signupData);
 
       if (response.user?.id) {
         localStorage.setItem('token', response.token);
-        toast.success('Account created successfully!', { id: loadingToast });
+        toast.success('Account created successfully!', {
+          id: loadingToast,
+          style: {
+            padding: '8px 16px',
+            background: 'transparent',
+            border: '1px solid #10B981',
+            color: '#1F2937',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          },
+        });
         this.setState({ showWhatsAppDialog: true });
       } else {
-        toast.error('Signup failed. Please try again.', { id: loadingToast });
+        toast.error('Signup failed. Please try again.', {
+          id: loadingToast,
+          style: {
+            padding: '8px 16px',
+            background: 'transparent',
+            border: '1px solid #EF4444',
+            color: '#1F2937',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          },
+        });
       }
     } catch (error: any) {
       const errorMessage = error.message || 'An error occurred during signup.';
       console.error('Signup error details:', error);
-      toast.error(errorMessage);
+      toast.error(errorMessage, {
+        style: {
+          padding: '8px 16px',
+          background: 'transparent',
+          border: '1px solid #EF4444',
+          color: '#1F2937',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        },
+      });
     } finally {
-      this.setState({ isLoading: false }); // Reset loading state
+      this.setState({ isLoading: false });
     }
   };
 
@@ -125,6 +199,13 @@ class SignupPage extends Component<{}, SignupState> {
     }, 500);
     toast.success('You will be redirected to login in 5 seconds...', {
       duration: 400,
+      style: {
+        padding: '8px 16px',
+        background: 'transparent',
+        border: '1px solid #10B981',
+        color: '#1F2937',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      },
     });
   };
 
@@ -288,9 +369,9 @@ class SignupPage extends Component<{}, SignupState> {
                 transition: 'background-color 0.3s ease-in-out',
               }}
               onClick={this.throttledSignup}
-              disabled={isLoading} // Disable button when loading
+              disabled={isLoading}
             >
-              {isLoading ? 'Signing Up...' : 'Sign Up'} 
+              {isLoading ? 'Signing Up...' : 'Sign Up'}
             </Button>
           </Stack>
 
