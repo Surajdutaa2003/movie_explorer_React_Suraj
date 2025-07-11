@@ -15,6 +15,7 @@ import { fetchSliderMovies } from '../redux/sliderSlice';
 import { RootState, AppDispatch } from '../redux/store';
 import ChatBot from './ChatBot';
 import VoiceSearch from './VoiceSearch';
+import NearbyTheaters from './NearbyTheaters';
 
 interface MovieListProps {
   movies: Movie[];
@@ -379,6 +380,11 @@ const Dashboard: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* Add Nearby Theaters section */}
+        <section className="mt-8">
+          <NearbyTheaters />
+        </section>
 
         {totalPages > 1 && (
           <div className="mt-8 flex justify-center space-x-4">
